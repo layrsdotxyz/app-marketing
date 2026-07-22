@@ -1,0 +1,38 @@
+LAYRS BRAND KIT
+===============
+Full guidelines: https://layrs.xyz/brand.html
+
+FILES
+  layrs-mark.svg    Primary mark, vector. Inherits currentColor.
+  layrs-logo.svg    Horizontal lockup (mark + wordmark), vector.
+  layrs-logo.png    Horizontal lockup, raster.
+  layrs-icon.svg    Square app icon, vector.
+  layrs-icon.png    Square app icon, raster.
+  favicon.ico       Browser favicon.
+  og-image.png      Social sharing card, 1200x630.
+
+COLOUR
+  Horizen yellow  #FECB17   accent, fills only
+  Yellow pressed  #F0B400   hover / pressed
+  Ink             #0A0F1E   text and rules
+  Horizen navy    #030E24   dark ground
+  Panel           #F4F3EF   warm neutral
+  Yes / No mark   #0BA394 / #E0553F
+  Yes / No text   #0A6E5C / #B4342F
+
+  Yellow is never text on a light ground (1.53:1). Set ink on yellow (12.5:1).
+
+TYPE
+  Display  Zodiak           headlines only
+  Body     Switzer          UI and running text
+  Data     JetBrains Mono   prices, hashes, labels
+
+RULES
+  Do    use files unmodified; keep clear space equal to the mark's lower-bar
+        height on all sides; minimum 20px tall on screen, 8mm in print;
+        write "Layrs" with one capital.
+  Don't recolour, rotate, skew or add effects; rebuild the wordmark in another
+        typeface; place on busy imagery; imply endorsement.
+
+The Layrs name and mark are trademarks of Layrs. Editorial, documentation and
+integration use is permitted under these rules. Anything else: brand@layrs.xyz
