@@ -1,49 +1,14 @@
 {
-  "name": "hedera-marketing",
-  "version": "0.1.0",
+  "name": "@layrs/app-marketing",
+  "version": "2.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "build": "node scripts/package-site.mjs",
+    "check": "node scripts/validate-site.mjs",
+    "test": "node --test tests/site.test.mjs"
   },
-  "dependencies": {
-    "@aws-sdk/client-ses": "^3.1087.0",
-    "@hookform/resolvers": "^3.9.0",
-    "@next/third-parties": "^15.5.16",
-    "@radix-ui/react-label": "^2.1.0",
-    "@radix-ui/react-slot": "^1.1.0",
-    "@radix-ui/react-toast": "^1.2.1",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
-    "framer-motion": "^11.3.0",
-    "gsap": "^3.12.5",
-    "lucide-react": "^0.462.0",
-    "next": "^15.5.16",
-    "next-themes": "^0.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-hook-form": "^7.53.0",
-    "sonner": "^1.5.0",
-    "tailwind-merge": "^2.5.4",
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@vitest/ui": "^4.1.4",
-    "autoprefixer": "^10.0.1",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^15.5.16",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "tailwindcss-animate": "^1.0.7",
-    "typescript": "^5",
-    "vitest": "^4.1.4"
+  "engines": {
+    "node": ">=20"
   }
 }

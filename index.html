@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layrs — Public odds. Private positions.</title>
+<meta name="description" content="Layrs runs its order book inside an attested enclave. Public odds, private positions.">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#030E24" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://layrs.xyz/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Layrs">
+<meta property="og:title" content="Layrs — Public odds. Private positions.">
+<meta property="og:description" content="A confidential order book for verifiable prediction markets on Horizen.">
+<meta property="og:url" content="https://layrs.xyz/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@layrsprotocol">
+
+<link rel="icon" href="layrs-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts-inlined.css">
+<link rel="stylesheet" href="styles.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<!-- ════════ NAV ════════ -->
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top" aria-label="Layrs home">
+      <svg viewBox="0 0 500 500" aria-hidden="true"><path d="M149 62L242 62L247 64L248 70L99 328L96 340L100 344L408 345L411 348L409 356L361 437L144 436L41 258L39 245L142 67Z"/><path d="M360 68L368 72L463 237L465 246L462 249L262 249L259 246L264 231Z"/></svg>
+      <b>LAYRS</b>
+    </a>
+    <nav class="nav-links">
+      <a href="#why">Why Layrs</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#pipeline">Pipeline</a>
+          </nav>
+    <div class="nav-right">
+      <span class="chain"><i class="dot"></i>Beta · Horizen</span>
+      <a class="btn btn-sm" href="https://app.layrs.xyz">Launch App</a>
+    </div>
+  </div>
+</header>
+
+<!-- ════════ HERO ════════ -->
+<main id="top">
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow r d1">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L96 88 L4 88 Z"/></svg>
+      <span>Confidential order book · Horizen</span>
+    </div>
+
+    <h1 class="lede r d2">Public odds.<br><span class="mark">Private positions.</span></h1>
+
+    <p class="sub r d3">
+      Layrs runs its order book inside an attested enclave. Your orders, balances and
+      positions are encrypted to hardware you can verify yourself, and every ledger
+      transition is proved on Horizen without exposing a single position.
+    </p>
+
+    <div class="cta-row r d4">
+      <a class="btn" href="#launch">Launch App <span class="arw">→</span></a>
+      <a class="btn-ghost" href="#why">See how it works</a>
+    </div>
+
+    <dl class="spec-rail r d5">
+      <div class="spec"><dt>Enclave</dt><dd>Order execution</dd></div>
+      <div class="spec"><dt>ZK</dt><dd>Ledger checkpoints</dd></div>
+      <div class="spec"><dt>Horizen</dt><dd>Proofs &amp; settlement</dd></div>
+    </dl>
+  </div>
+
+  <!-- terminal panel -->
+  <div class="panel r d6">
+    <div class="panel-bar">
+      <span class="tag">Layrs · Sealed order book</span>
+      <span class="right"><i class="dot"></i><span class="tag">Beta</span></span>
+    </div>
+
+    <div class="panel-body">
+      <p class="q">Will ETH close above $4,000 on the last trading day of the quarter?</p>
+      <p class="q-meta">ETH-4000-Q — resolves via oracle on Horizen</p>
+
+      <div class="book">
+        <div class="side y"><div class="lbl">Yes</div><div class="px">63¢</div><div class="vol">aggregate tape</div></div>
+        <div class="side n"><div class="lbl">No</div><div class="px">37¢</div><div class="vol">aggregate tape</div></div>
+      </div>
+      <div class="split"><i class="sy"></i><i class="sn"></i></div>
+
+      <div class="redact-head">
+        <span class="tag order-label">Your order</span>
+        <span class="hint"><span class="hint-hover">Hover to reveal</span><span class="hint-tap">Tap to reveal</span></span>
+      </div>
+      <button class="redact" type="button">
+        <span class="proof">
+          <span class="h">enc 0x8f3ad41c…b7e290 → enclave</span>
+          <span class="v"><i class="dot dot-static"></i>Attestation verified in browser</span>
+        </span>
+        <span class="bar">
+          <b>Sealed</b>
+          <span class="blocks"><i></i><i></i><i></i><i></i><i></i></span>
+        </span>
+      </button>
+    </div>
+
+    <div class="panel-foot">
+      <span class="tag">What leaves your browser</span>
+      <span class="k">Ciphertext only</span>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ════════ TICKER ════════ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>ETH &gt; $4,000 · Q close <b>63¢</b></span>
+    <span>BTC &gt; $120,000 by year end <b>41¢</b></span>
+    <span>Fed cuts at the next meeting <b>28¢</b></span>
+    <span>ZK rollup TVL doubles this quarter <b>55¢</b></span>
+    <span>Horizen mainnet ships in H2 <b>72¢</b></span>
+    <span>Sub-second proving on consumer hardware <b>34¢</b></span>
+    <span>ETH &gt; $4,000 · Q close <b>63¢</b></span>
+    <span>BTC &gt; $120,000 by year end <b>41¢</b></span>
+    <span>Fed cuts at the next meeting <b>28¢</b></span>
+    <span>ZK rollup TVL doubles this quarter <b>55¢</b></span>
+    <span>Horizen mainnet ships in H2 <b>72¢</b></span>
+    <span>Sub-second proving on consumer hardware <b>34¢</b></span>
+  </div>
+</div>
+
+<!-- ════════ WHY A HIDDEN BOOK ════════ -->
+<section class="wrap sec" id="why">
+  <div class="sec-head reveal">
+    <span class="tag">Why it matters</span>
+    <h2>A public order book is a free signal.</h2>
+    <p>
+      Every transparent market hands your competition the same file: where you are, how big,
+      and how you have done. Same market, same prices — the difference is what a stranger
+      can learn about you.
+    </p>
+  </div>
+
+  <div class="compare reveal">
+    <div class="cpanel">
+      <div class="cbar"><span class="tag">Any public market</span></div>
+      <div class="ch"><span class="tag">Trader</span><span class="tag">Side</span><span class="tag ar">Size</span><span class="tag ar">PnL</span></div>
+      <div class="cr"><span class="cv">0x4e19…c7a0</span><span class="cv y">Yes</span><span class="cv ar">12,400</span><span class="cv ar up">+3,180</span></div>
+      <div class="cr"><span class="cv">0xa31f…9c04</span><span class="cv n">No</span><span class="cv ar">3,200</span><span class="cv ar dn">−740</span></div>
+      <div class="cr"><span class="cv">0xc0d8…ba51</span><span class="cv y">Yes</span><span class="cv ar">48,000</span><span class="cv ar up">+21,050</span></div>
+      <div class="cr"><span class="cv">0x7712…fe3d</span><span class="cv y">Yes</span><span class="cv ar">900</span><span class="cv ar dn">−120</span></div>
+      <div class="cfoot">Anyone can fade you, front-run you, or simply copy you.</div>
+    </div>
+
+    <div class="cpanel hi">
+      <div class="cbar"><span class="tag">Layrs</span><span class="right tag">Sealed</span></div>
+      <div class="ch"><span class="tag">Trader</span><span class="tag">Side</span><span class="tag ar">Size</span><span class="tag ar">PnL</span></div>
+      <div class="cr"><i class="blk w1"></i><i class="blk w2"></i><i class="blk w3"></i><i class="blk w4"></i></div>
+      <div class="cr"><i class="blk w2"></i><i class="blk w1"></i><i class="blk w4"></i><i class="blk w3"></i></div>
+      <div class="cr"><i class="blk w1"></i><i class="blk w2"></i><i class="blk w3"></i><i class="blk w2"></i></div>
+      <div class="cr"><i class="blk w3"></i><i class="blk w1"></i><i class="blk w2"></i><i class="blk w4"></i></div>
+      <div class="cfoot">Prices move. Nothing about the trader moves with them.</div>
+    </div>
+  </div>
+  <p class="sr-only">On Layrs, trader, side, size and profit are hidden for every row.</p>
+</section>
+
+<!-- ════════ SPEC SHEET ════════ -->
+<section class="wrap sec no-top-padding" id="protocol">
+  <div class="sec-head reveal">
+    <span class="tag">Protocol</span>
+    <h2>Confidentiality you can check, not take on faith.</h2>
+    <p>Your browser verifies the enclave before it sends anything, and the chain verifies
+      the enclave's work after. Neither step asks you to trust an operator.</p>
+  </div>
+
+  <div class="sheet reveal">
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4 92 28v48L50 96 8 76V28Z"/></svg>
+      <h3>Hidden order book</h3>
+      <p>Matching, balances, positions and the risk engine all run inside the enclave. Resting orders are never exposed to operators or other traders.</p>
+      <div class="meta">Enclave order book</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M26 44V32a24 24 0 0 1 48 0v12h10v52H16V44Zm14 0h20V32a10 10 0 0 0-20 0Z"/></svg>
+      <h3>Verified before you send</h3>
+      <p>The client checks the enclave's attestation, then encrypts your signed order to its public key. Plaintext never reaches an API container, a database or a log.</p>
+      <div class="meta">Client-side attestation</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M44 2h12v14H44zM14 42h12v14H14zm60 0h12v14H74zM4 84h12v14H4zm20 0h12v14H24zm40 0h12v14H64zm20 0h12v14H84zM48 14h4v18h-4zM18 30h64v4H18zm0 0h4v14h-4zm60 0h4v14h-4zM18 72h4v14h-4zm0 0h20v4H18zm52 0h4v14h-4zm10 0h4v14h-4zM8 72h4v14H8zm0 0h20v4H8zm60 0h24v4H68z"/></svg>
+      <h3>Proved ledger transitions</h3>
+      <p>A prover shows the new ledger root follows correctly from the old one under the public outcome — that only winners were paid, collateral was conserved and nothing settled twice.</p>
+      <div class="meta">Horizen checkpoint</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 4a46 46 0 1 0 0 92 46 46 0 0 0 0-92Zm0 20a26 26 0 1 1 0 52 26 26 0 0 1 0-52Z"/></svg>
+      <h3>Public resolution</h3>
+      <p>Market terms, closing times and oracle outcomes stay fully on-chain. The result is a public fact; only the map from that result to individual payouts is private.</p>
+      <div class="meta">Horizen · oracle attested</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M6 26h58v12H6zM60 14l34 18-34 18zM36 62h58v12H36zM40 50L6 68l34 18z"/></svg>
+      <h3>Deposit from any chain</h3>
+      <p>Intent-based routing brings collateral in from wherever you hold it, into one common vault rather than an address that belongs to you.</p>
+      <div class="meta">Any supported chain</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M8 14h84v18H8zM8 42h84v18H8zM8 70h84v18H8z"/></svg>
+      <h3>Clean exits</h3>
+      <p>Withdrawals are batched and paid out separately from your balance, so no single on-chain transfer matches what you held.</p>
+      <div class="meta">Aggregate reimbursement</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ PIPELINE ════════ -->
+<section class="wrap sec no-top-padding" id="pipeline">
+  <div class="sec-head reveal">
+    <span class="tag">Pipeline</span>
+    <h2>How an order clears.</h2>
+    <p>Five stages. Execution is immediate; the proof catches up behind it, and withdrawals
+      only unlock from a ledger root that has already been proved.</p>
+  </div>
+
+  <div class="flow reveal">
+    <div class="stepc">
+      <div class="n">01 — INGRESS</div>
+      <h3>Fund from anywhere</h3>
+      <p>Bring collateral from wherever you already hold it. It arrives as balance in your account, with nothing on-chain pointing back at you.</p>
+      <div class="who">Any supported chain</div>
+    </div>
+    <div class="stepc">
+      <div class="n">02 — SEAL</div>
+      <h3>Encrypt to the enclave</h3>
+      <p>Your client verifies the attestation, then seals the signed order to the enclave key. Nothing outside can read it, including us.</p>
+      <div class="who">Browser</div>
+    </div>
+    <div class="stepc">
+      <div class="n">03 — EXECUTE</div>
+      <h3>Match in confidence</h3>
+      <p>The enclave checks balance and risk, matches against the hidden book and updates the private ledger. Only encrypted state is persisted outside.</p>
+      <div class="who">Attested enclave</div>
+    </div>
+    <div class="stepc">
+      <div class="n">04 — PROVE</div>
+      <h3>Checkpoint the root</h3>
+      <p>An asynchronous prover shows the new root follows from the old one and submits it. Traders never wait on proof generation.</p>
+      <div class="who">Horizen</div>
+    </div>
+    <div class="stepc">
+      <div class="n">05 — EXIT</div>
+      <h3>Cash out clean</h3>
+      <p>Cash out to any address you like. Payouts are batched, so no single transfer lines up with your balance.</p>
+      <div class="who">Any address</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ STACK + HORIZEN ════════ -->
+<section class="wrap sec no-top-padding" id="horizen">
+  <div class="sec-head reveal">
+    <span class="tag">Architecture</span>
+    <h2>Three layers, each doing one job.</h2>
+    <p>Every layer is replaceable and none of them is asked to do a job it was not built
+      for — which is why the confidential ledger underneath extends to perps unchanged.</p>
+  </div>
+
+  <div class="stack reveal">
+    <div class="layer">
+      <div class="n">Layer 01 — Ingress</div>
+      <h3>Chain abstraction</h3>
+      <p>Collateral arrives from any supported chain and becomes account balance, without a public address that belongs to you.</p>
+      <div class="who">Any supported chain</div>
+    </div>
+    <div class="layer">
+      <div class="n">Layer 02 — Execution</div>
+      <h3>Confidential compute</h3>
+      <p>An attested enclave holds the order book, balances, positions and risk engine. State leaves it only as ciphertext.</p>
+      <div class="who">Attested enclave</div>
+    </div>
+    <div class="layer">
+      <div class="n">Layer 03 — Verification</div>
+      <h3>Proofs and custody</h3>
+      <p>Ledger transitions are proved and verified publicly; collateral and market registry contracts live on Horizen.</p>
+      <div class="who">Horizen</div>
+    </div>
+  </div>
+
+  <div class="backer reveal">
+    <svg class="hz-mark" viewBox="0 0 400 400" aria-label="Horizen" role="img">
+      <rect x="0" y="0" width="400" height="400" fill="#FECB17"/>
+      <path fill="#030E24" d="M330.8955,106.2967l-.0102.027-26.3353,40.7849c8.0566,15.8933,12.6253,33.8535,12.6253,52.8913,0,64.7141-52.4615,117.1753-117.1756,117.1753-19.0129,0-36.9514-4.5569-52.8292-12.5939l-40.7977,26.3682c26.3868,18.9002,58.6942,30.0613,93.6268,30.0613,88.924,0,161.0112-72.0871,161.0112-161.0109,0-34.9667-11.1818-67.3025-30.1154-93.7032Z"/>
+      <path fill="#030E24" d="M200,280.6325c39.6392,0,72.5941-28.527,79.512-66.166-12.5457-2.6831-25.5507-4.1271-38.8974-4.1271-40.1867,0-77.3518,12.8448-107.7015,34.5947,14.5293,21.5356,39.1536,35.6985,67.0869,35.6985Z"/>
+      <path fill="#030E24" d="M239.86,195.6341c14.0761,0,27.7872,1.5405,41.01,4.3941,0-.0095.0007-.0188.0007-.0283,0-44.6637-36.2074-80.8707-80.8707-80.8707s-80.8707,36.207-80.8707,80.8707c0,3.6694.2734,7.2721.7492,10.8105-.0084.0064-.0157.011-.0241.0174-20.365,15.4663-30.0226,27.7221-30.3288,28.1143-4.3108-12.1857-6.7008-25.2768-6.7008-38.9421,0-64.7141,52.4608-117.1753,117.1749-117.1753,18.9504,0,36.8337,4.5262,52.6728,12.5137l40.8222-26.3821c-26.3627-18.8428-58.62-29.9671-93.4949-29.9671-88.9232,0-161.0105,72.0869-161.0105,161.0107,0,35.7913,11.6964,68.837,31.4559,95.5639,7.6326-13.7796,16.8977-26.5209,27.5332-37.9807,0,0,15.8811-16.5717,28.0496-24.9031,31.9514-23.2776,71.2749-37.0459,113.8322-37.0459Z"/>
+    </svg>
+    <div>
+      <span class="tag backed-label">Backed by</span>
+      <h3>Built and funded on Horizen.</h3>
+      <p>
+        Horizen names private order books and confidential balances as core use cases for its
+        privacy stack, and its chain is where Layrs anchors custody, proofs and the market
+        registry. Horizen brings the infrastructure and the funding; we bring the market.
+      </p>
+      <div class="eco">
+        <span>Horizen</span><span>Base</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CLOSING ════════ -->
+<section class="close" id="launch">
+  <div class="wrap">
+    <div>
+      <h2>You already have the edge. Stop broadcasting it.</h2>
+      <p>Layrs is in beta on Horizen. Fund from any chain, verify the enclave yourself, and
+        place an order nobody else can read.</p>
+      <div class="cta-row">
+        <a class="btn" href="https://app.layrs.xyz">Launch App <span class="arw">→</span></a>
+        <a class="btn-ghost" href="https://docs.layrs.xyz/protocol">Read the protocol spec</a>
+      </div>
+    </div>
+    <svg class="close-mark" viewBox="0 0 500 500" aria-hidden="true"><path d="M149 62L242 62L247 64L248 70L99 328L96 340L100 344L408 345L411 348L409 356L361 437L144 436L41 258L39 245L142 67Z"/><path d="M360 68L368 72L463 237L465 246L462 249L262 249L259 246L264 231Z"/></svg>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#top" aria-label="Layrs home">
+          <svg viewBox="0 0 500 500" aria-hidden="true"><path d="M149 62L242 62L247 64L248 70L99 328L96 340L100 344L408 345L411 348L409 356L361 437L144 436L41 258L39 245L142 67Z"/><path d="M360 68L368 72L463 237L465 246L462 249L262 249L259 246L264 231Z"/></svg>
+          <b>LAYRS</b>
+        </a>
+        <p class="foot-blurb">A confidential order book for prediction markets, executed in an attested enclave and settled on Horizen.</p>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <nav><a href="https://app.layrs.xyz">Markets</a><a href="https://vaults.layrs.xyz">Vaults</a><a href="https://docs.layrs.xyz/attestation">Attestation</a><a href="https://docs.layrs.xyz/security">Security</a></nav>
+      </div>
+      <div>
+        <h4>Developers</h4>
+        <nav><a href="https://docs.layrs.xyz">Documentation</a><a href="https://github.com/layrsHQ">GitHub</a><a href="https://docs.layrs.xyz/sdk">SDK</a><a href="https://docs.layrs.xyz/verify">Verify a checkpoint</a></nav>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <nav><a href="https://x.com/layrsprotocol">X / Twitter</a><a href="https://docs.layrs.xyz/community">Community</a><a href="https://docs.layrs.xyz/updates">Updates</a><a href="https://docs.layrs.xyz/brand">Brand kit</a></nav>
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span class="tag">© 2026 Layrs Protocol</span>
+      <span class="tag">Beta · Horizen</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
