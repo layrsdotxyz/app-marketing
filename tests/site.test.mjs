@@ -13,6 +13,12 @@ test("publishes one document without a client-side router", () => {
   assert.doesNotMatch(html, /next\/|react|router/i);
 });
 
+test("plays a self-hosted, muted hero video without blocking reduced-motion users", () => {
+  assert.match(html, /<video class="hero-video" autoplay muted loop playsinline/);
+  assert.match(html, /<source src="hero-bg\.mp4" type="video\/mp4">/);
+  assert.match(css, /prefers-reduced-motion:reduce[\s\S]*\.hero-video\{display:none;\}/);
+});
+
 test("keeps redaction keyboard accessible", () => {
   assert.match(html, /<button class="redact" type="button">/);
   assert.match(css, /\.redact:hover \.bar,\s*\.redact:focus-visible \.bar/);

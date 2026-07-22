@@ -18,6 +18,8 @@ const rejectText = (source, pattern, description) => {
 };
 
 requireText(html, '<button class="redact" type="button">', "semantic redaction button");
+requireText(html, '<video class="hero-video" autoplay muted loop playsinline', "muted autoplay hero video");
+requireText(html, '<source src="hero-bg.mp4" type="video/mp4">', "self-hosted hero video source");
 requireText(css, "box-decoration-break:clone", "per-line marker stroke");
 requireText(css, ".foot-grid nav a", "scoped footer selector");
 requireText(css, "@media (prefers-reduced-motion:reduce)", "reduced-motion behavior");

@@ -10,6 +10,7 @@ const publicFiles = [
   "fonts-inlined.css",
   "site.js",
   "layrs-mark.svg",
+  "hero-bg.mp4",
   "robots.txt",
   "sitemap.xml",
 ];
