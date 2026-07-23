@@ -1,0 +1,31 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main, feat/**]
+
+permissions:
+  contents: read
+
+jobs:
+  marketing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24.13.0'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - name: Static secret scan
+        run: |
+          if git grep -I -n -E \
+            '(ghp_[A-Za-z0-9_]{20,}|privy_app_secret_[A-Za-z0-9]{20,}|cfat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' \
+            -- . ':!package-lock.json'; then
+            exit 1
+          fi
