@@ -11,8 +11,17 @@ commands:
       - run:
           name: Install AWS CLI
           command: |
+            if command -v aws >/dev/null 2>&1; then
+              aws --version
+              exit 0
+            fi
             sudo apt-get update
-            sudo apt-get install -y awscli
+            sudo apt-get install -y curl unzip
+            tmp_dir="$(mktemp -d)"
+            curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$tmp_dir/awscliv2.zip"
+            unzip -q "$tmp_dir/awscliv2.zip" -d "$tmp_dir"
+            sudo "$tmp_dir/aws/install" --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
+            aws --version
   assume-production-role:
     steps:
       - run:
