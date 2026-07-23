@@ -24,5 +24,8 @@ jobs:
       - run: npm run build
       - name: Static secret scan
         run: |
-          ! grep -RIE --exclude-dir=.git --exclude=package-lock.json \
-            '(ghp_[A-Za-z0-9_]{20,}|privy_app_secret_[A-Za-z0-9]{20,}|cfat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' .
+          if git grep -I -n -E \
+            '(ghp_[A-Za-z0-9_]{20,}|privy_app_secret_[A-Za-z0-9]{20,}|cfat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' \
+            -- . ':!package-lock.json'; then
+            exit 1
+          fi
