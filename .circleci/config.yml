@@ -1,0 +1,135 @@
+version: 2.1
+
+parameters:
+  deploy-production:
+    type: boolean
+    default: false
+
+commands:
+  install-aws-cli:
+    steps:
+      - run:
+          name: Install AWS CLI
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y awscli
+  assume-production-role:
+    steps:
+      - run:
+          name: Assume layrsv2 production deploy role
+          command: |
+            : "${LAYRSV2_CIRCLECI_AWS_ROLE_ARN:?set in layrsv2-production-deploy context}"
+            : "${CIRCLE_OIDC_TOKEN_V2:?CircleCI OIDC token is required}"
+            credentials=$(aws sts assume-role-with-web-identity \
+              --region "${LAYRSV2_PRIMARY_REGION:-us-east-1}" \
+              --role-arn "$LAYRSV2_CIRCLECI_AWS_ROLE_ARN" \
+              --role-session-name "layrsv2-marketing-${CIRCLE_WORKFLOW_ID}-${CIRCLE_BUILD_NUM}" \
+              --web-identity-token "$CIRCLE_OIDC_TOKEN_V2" \
+              --duration-seconds 3600 \
+              --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+              --output text)
+            read -r access_key secret_key session_token <<<"$credentials"
+            {
+              echo "export AWS_ACCESS_KEY_ID=$access_key"
+              echo "export AWS_SECRET_ACCESS_KEY=$secret_key"
+              echo "export AWS_SESSION_TOKEN=$session_token"
+              echo "export AWS_DEFAULT_REGION=${LAYRSV2_PRIMARY_REGION:-us-east-1}"
+            } >> "$BASH_ENV"
+
+jobs:
+  marketing-ci:
+    docker:
+      - image: cimg/node:24.13
+    resource_class: small
+    working_directory: ~/project
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "package-lock.json" }}
+            - npm-v1-
+      - run:
+          name: Install dependencies
+          command: npm ci --ignore-scripts
+      - save_cache:
+          key: npm-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run:
+          name: Static site invariants
+          command: npm run check
+      - run:
+          name: Unit tests
+          command: npm test
+      - run:
+          name: Package static release
+          command: npm run build
+      - run:
+          name: Static secret pattern scan
+          command: |
+            if git grep -I -n -E \
+              '(ghp_[A-Za-z0-9_]{20,}|privy_app_secret_[A-Za-z0-9]{20,}|cfat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' \
+              -- . ':!package-lock.json'; then
+              exit 1
+            fi
+  deploy-production:
+    docker:
+      - image: cimg/node:24.13
+    resource_class: small
+    working_directory: ~/project
+    steps:
+      - checkout
+      - install-aws-cli
+      - assume-production-role
+      - restore_cache:
+          keys:
+            - npm-v1-{{ checksum "package-lock.json" }}
+            - npm-v1-
+      - run:
+          name: Install dependencies
+          command: npm ci --ignore-scripts
+      - save_cache:
+          key: npm-v1-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - run:
+          name: Static site invariants
+          command: npm run check
+      - run:
+          name: Unit tests
+          command: npm test
+      - run:
+          name: Package static release
+          command: npm run build
+      - run:
+          name: Publish layrs.xyz
+          command: deployment/publish-static-release.sh dist "$LAYRSV2_MARKETING_BUCKET" "$LAYRSV2_MARKETING_DISTRIBUTION_ID" "${LAYRSV2_PRIMARY_REGION:-us-east-1}"
+      - store_artifacts:
+          path: dist
+          destination: marketing-dist
+
+workflows:
+  marketing:
+    when:
+      not: << pipeline.parameters.deploy-production >>
+    jobs:
+      - marketing-ci
+  marketing-production-deploy:
+    when: << pipeline.parameters.deploy-production >>
+    jobs:
+      - marketing-ci
+      - approve-production-deploy:
+          type: approval
+          requires:
+            - marketing-ci
+          filters:
+            branches:
+              only: main
+      - deploy-production:
+          requires:
+            - approve-production-deploy
+          context:
+            - layrsv2-production-deploy
+          filters:
+            branches:
+              only: main
