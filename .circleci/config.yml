@@ -2,8 +2,8 @@ version: 2.1
 
 parameters:
   deploy-production:
-    type: boolean
-    default: false
+    type: string
+    default: "false"
 
 commands:
   install-aws-cli:
@@ -111,11 +111,13 @@ jobs:
 workflows:
   marketing:
     when:
-      not: << pipeline.parameters.deploy-production >>
+      not:
+        equal: ["true", << pipeline.parameters.deploy-production >>]
     jobs:
       - marketing-ci
   marketing-production-deploy:
-    when: << pipeline.parameters.deploy-production >>
+    when:
+      equal: ["true", << pipeline.parameters.deploy-production >>]
     jobs:
       - marketing-ci
       - approve-production-deploy:
