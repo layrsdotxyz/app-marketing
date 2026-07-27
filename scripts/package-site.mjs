@@ -15,6 +15,9 @@ const publicFiles = [
   "sitemap.xml",
   "brand.html",
   "brand.css",
+  "deployment.html",
+  "deployment.css",
+  "deployment.js",
 ];
 
 // Brand assets ship as a directory so the kit download and the individual files

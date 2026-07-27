@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/package-site.mjs",
+    "sync:contracts": "node scripts/sync-deployment-registry.mjs",
+    "render": "node scripts/render-site.mjs",
+    "build": "npm run render && node scripts/package-site.mjs",
     "check": "node scripts/validate-site.mjs",
     "test": "node --test tests/site.test.mjs"
   },

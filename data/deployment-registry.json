@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "repository": "layrsHQ/app-smart-contracts",
+    "sourceCommit": "c422ce470b791e0140f153a32b65d3f6896b6f0c",
+    "manifests": {
+      "base": {
+        "path": "deployment/base.json",
+        "sha256": "61d608221772eb825b4daacca000dfa9ef2f1dd578cf55406fc505d23c7ab14c"
+      },
+      "horizen": {
+        "path": "deployment/horizen.json",
+        "sha256": "9f8eb4a8e5aee565dda10c000e63b521aadb8746c50319554eb62995310e60e6"
+      }
+    }
+  },
+  "chains": [
+    {
+      "key": "horizen",
+      "name": "Horizen",
+      "chainId": 26514,
+      "explorer": "https://horizen.calderaexplorer.xyz/address/",
+      "core": {
+        "layrsAdmin": {
+          "proxy": "0x929cc4D1D176E925b54B356c98eF9D376ec22f11",
+          "implementation": "0x495955861a737A6a17eAe4b7A762dCeFbB409161"
+        },
+        "marketRegistry": {
+          "proxy": "0x4C5ddC039d1eF5EFe3255A5C33D0De931ed5dc8F",
+          "implementation": "0x5fd407d95894f4d6c93C8b8d5c49D8a1F76E1535"
+        },
+        "adminOracle": {
+          "proxy": "0x9e11B80bF69C1d28C0E29540D3b0900370135A85",
+          "implementation": "0x15B4Eddcf49D5727c7fDc63F682bD6e30fAf90C6"
+        },
+        "matchSettlement": {
+          "proxy": "0xEbdE1b32a86a5B2ff782E075b40e58F96B8b3DB7",
+          "implementation": "0x48095c6D5C4385ec4e4b0d0006F15504D91e37dD"
+        }
+      },
+      "pools": [
+        {
+          "symbol": "ZEN",
+          "role": "Prediction-market collateral + LP vault",
+          "asset": "0x57da2D504bf8b83Ef304759d9f2648522D7a9280",
+          "pool": {
+            "implementation": "0x1BB19845d00Eb16d7d9e7b27aCeBc1572F0BAD5e",
+            "proxy": "0xbF820a025D5E4f887470C7C86F997e9899C718c7"
+          },
+          "vault": {
+            "implementation": "0x7367E387ebf1C7618D3D3e05EAD79F9eFb9806eA",
+            "proxy": "0xa4bf62c6CaE3D3533d65b2D04e62cB6E757D57A7"
+          },
+          "adapters": [
+            {
+              "name": "Layrs ZenStaker",
+              "address": "0x3D1C5104908bBA3918Ad53FAD4d1dA13fee25E2D",
+              "status": "registered-active"
+            }
+          ],
+          "active": true
+        }
+      ]
+    },
+    {
+      "key": "base",
+      "name": "Base",
+      "chainId": 8453,
+      "explorer": "https://basescan.org/address/",
+      "core": {
+        "layrsAdmin": {
+          "proxy": "0x9e11B80bF69C1d28C0E29540D3b0900370135A85",
+          "implementation": "0x15B4Eddcf49D5727c7fDc63F682bD6e30fAf90C6"
+        },
+        "marketRegistry": {
+          "proxy": "0xEbdE1b32a86a5B2ff782E075b40e58F96B8b3DB7",
+          "implementation": "0x48095c6D5C4385ec4e4b0d0006F15504D91e37dD"
+        },
+        "adminOracle": {
+          "proxy": "0xbF820a025D5E4f887470C7C86F997e9899C718c7",
+          "implementation": "0x1BB19845d00Eb16d7d9e7b27aCeBc1572F0BAD5e"
+        },
+        "matchSettlement": {
+          "proxy": "0xa4bf62c6CaE3D3533d65b2D04e62cB6E757D57A7",
+          "implementation": "0x7367E387ebf1C7618D3D3e05EAD79F9eFb9806eA"
+        }
+      },
+      "pools": [
+        {
+          "symbol": "USDC",
+          "role": "USDC prediction-market collateral + LP vault",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "pool": {
+            "implementation": "0xdF721fa6ae95Ea6db3f9b5D625dD2E9566785d18",
+            "proxy": "0x384A1393eC0310dEB47324E44Fad899931450171"
+          },
+          "vault": {
+            "implementation": "0x88CE57991DED1fC79771BB099A32c7Dfdc53FaFf",
+            "proxy": "0x4710F672f8C07c638414D969750962b52A44ABA3"
+          },
+          "adapters": [],
+          "active": false
+        },
+        {
+          "symbol": "ZEN",
+          "role": "ZEN prediction-market collateral + LP vault",
+          "asset": "0xf43eB8De897Fbc7F2502483B2Bef7Bb9EA179229",
+          "pool": {
+            "implementation": "0xfaA9c7F2C6364ED4b8439f3250b11A450b556328",
+            "proxy": "0xD251FC236E31A122A41b58f56CCe81Dd7374Edf8"
+          },
+          "vault": {
+            "implementation": "0xc623bFf1aC60D8f8c5942C057C9338ED04d04Ad1",
+            "proxy": "0x63f0bbF84f4c2Bf79518bC62904CCb113DFeb91a"
+          },
+          "adapters": [],
+          "active": false
+        },
+        {
+          "symbol": "ETH",
+          "role": "Wrapped-ETH LP vault (vault-only)",
+          "asset": "0x4200000000000000000000000000000000000006",
+          "pool": null,
+          "vault": {
+            "implementation": "0xaA13D013B04d87a77103adD9439ebBd6f2BEa780",
+            "proxy": "0xB8cA955DDA37B82e93Cd503Ea5EbC568622CbCf0"
+          },
+          "adapters": [],
+          "active": false
+        }
+      ]
+    }
+  ]
+}

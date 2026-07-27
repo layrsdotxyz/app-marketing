@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layrs — Deployed Contracts</title>
+<meta name="description" content="The authoritative registry of Layrs Protocol contracts deployed on Horizen and Base.">
+<meta name="base:app_id" content="6a600856078f6baf9ef300da">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#030E24" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://layrs.xyz/deployment">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Layrs">
+<meta property="og:title" content="Layrs — Deployed Contracts">
+<meta property="og:description" content="Every Layrs contract address, verifiable on-chain.">
+<meta property="og:url" content="https://layrs.xyz/deployment">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@layrsprotocol">
+<link rel="icon" href="/layrs-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts-inlined.css">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/deployment.css">
+<script src="/site.js" defer></script>
+<script src="/deployment.js" defer></script>
+</head>
+<body class="deployment-page">
+<!-- LAYRS_SHARED_HEADER_START -->
+{{LAYRS_SHARED_HEADER}}
+<!-- LAYRS_SHARED_HEADER_END -->
+
+<main class="deployment-main">
+  <section class="deployment-wrap deployment-hero" aria-labelledby="deployment-title">
+    <p class="eyebrow">Contract Registry · Mainnet</p>
+    <h1 id="deployment-title">Every address, <span class="deployment-redact">verifiable</span> on-chain.</h1>
+    <p class="deployment-lede">The complete set of <strong>Layrs Protocol</strong> contracts deployed to Horizen and Base. Each proxy links to its block-explorer page — confirm custody, roles and code for yourself. Use <span class="kmhint">Know more</span> on any contract to see what it does and how privacy is enforced.</p>
+    <div class="deployment-meta" aria-label="Deployment metadata">
+      <span class="deployment-chip"><span class="registry-dot"></span><b>Source-verified</b></span>
+      <span class="deployment-chip">Networks <b>Horizen · Base</b></span>
+      <span class="deployment-chip">Pattern <b>UUPS proxy</b></span>
+      <span class="deployment-chip">Assets <b>ZEN · USDC · ETH</b></span>
+    </div>
+  </section>
+
+  <div id="deployment-registry" class="deployment-wrap registry-sections" aria-live="polite"></div>
+
+  <aside class="deployment-wrap registry-note">
+    <span>Layrs Protocol · Contract Registry</span>
+    <p>Proxy addresses are the live, interactable contracts; implementation addresses hold the audited logic behind each UUPS proxy. Always verify against the explorer before interacting.</p>
+    <p class="registry-provenance" id="registry-provenance"></p>
+  </aside>
+</main>
+
+<!-- LAYRS_SHARED_FOOTER_START -->
+{{LAYRS_SHARED_FOOTER}}
+<!-- LAYRS_SHARED_FOOTER_END -->
+
+<script id="deployment-registry-data" type="application/json">{{LAYRS_DEPLOYMENT_REGISTRY}}</script>
+</body>
+</html>

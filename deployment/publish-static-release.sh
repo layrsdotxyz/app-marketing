@@ -35,9 +35,17 @@ aws s3 cp "$artifact_dir/index.html" "s3://$bucket_name/current/index.html" \
   --region "$aws_region" \
   --cache-control 'public,max-age=60,must-revalidate' \
   --content-type 'text/html; charset=utf-8'
+aws s3 cp "$artifact_dir/deployment.html" "s3://$bucket_name/releases/$release_id/deployment" \
+  --region "$aws_region" \
+  --cache-control 'public,max-age=31536000,immutable' \
+  --content-type 'text/html; charset=utf-8'
+aws s3 cp "$artifact_dir/deployment.html" "s3://$bucket_name/current/deployment" \
+  --region "$aws_region" \
+  --cache-control 'public,max-age=60,must-revalidate' \
+  --content-type 'text/html; charset=utf-8'
 aws cloudfront create-invalidation \
   --region "$aws_region" \
   --distribution-id "$distribution_id" \
-  --paths '/' '/index.html' \
+  --paths '/' '/index.html' '/deployment' '/deployment.html' \
   --query Invalidation.Id \
   --output text

@@ -3,10 +3,16 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, script] = await Promise.all([
+const [html, css, script, deployment, deploymentCss, deploymentScript, header, footer, registrySource] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "site.js"), "utf8"),
+  readFile(path.join(root, "deployment.html"), "utf8"),
+  readFile(path.join(root, "deployment.css"), "utf8"),
+  readFile(path.join(root, "deployment.js"), "utf8"),
+  readFile(path.join(root, "partials", "header.html"), "utf8"),
+  readFile(path.join(root, "partials", "footer.html"), "utf8"),
+  readFile(path.join(root, "data", "deployment-registry.json"), "utf8"),
 ]);
 
 const failures = [];
@@ -15,6 +21,12 @@ const requireText = (source, needle, description) => {
 };
 const rejectText = (source, pattern, description) => {
   if (pattern.test(source)) failures.push(`Disallowed ${description}: ${pattern}`);
+};
+const markedContent = (source, start, end) => {
+  const startIndex = source.indexOf(start);
+  const endIndex = source.indexOf(end);
+  if (startIndex < 0 || endIndex <= startIndex) return null;
+  return source.slice(startIndex + start.length, endIndex).trim();
 };
 
 requireText(html, '<button class="redact" type="button">', "semantic redaction button");
@@ -36,6 +48,51 @@ rejectText(html, /<script(?![^>]*\bsrc=)/i, "inline script");
 rejectText(html, /predifi|hedera|hcs/i, "legacy product reference");
 rejectText(html, /api\.fontshare|fonts\.googleapis|fonts\.gstatic/i, "third-party font request");
 rejectText(html, /href=["']#["']/i, "empty fragment link");
+
+const headerStart = "<!-- LAYRS_SHARED_HEADER_START -->";
+const headerEnd = "<!-- LAYRS_SHARED_HEADER_END -->";
+const footerStart = "<!-- LAYRS_SHARED_FOOTER_START -->";
+const footerEnd = "<!-- LAYRS_SHARED_FOOTER_END -->";
+if (markedContent(html, headerStart, headerEnd) !== header.trim()
+    || markedContent(deployment, headerStart, headerEnd) !== header.trim()) {
+  failures.push("Homepage and deployment page must use the canonical shared header partial");
+}
+if (markedContent(html, footerStart, footerEnd) !== footer.trim()
+    || markedContent(deployment, footerStart, footerEnd) !== footer.trim()) {
+  failures.push("Homepage and deployment page must use the canonical shared footer partial");
+}
+
+requireText(footer, '<a href="https://docs.layrs.xyz/security">Security</a>', "merged Security footer link");
+requireText(footer, '<a href="/deployment">Deployment</a>', "Deployment footer link");
+rejectText(footer, /docs\.layrs\.xyz\/attestation/i, "separate Attestation footer link");
+
+requireText(deployment, '<link rel="canonical" href="https://layrs.xyz/deployment">', "deployment canonical URL");
+requireText(deployment, '<meta name="base:app_id" content="6a600856078f6baf9ef300da">', "Base app metadata");
+requireText(deployment, 'Every address, <span class="deployment-redact">verifiable</span> on-chain.', "deployment title");
+requireText(deployment, 'id="deployment-registry-data" type="application/json"', "embedded generated registry");
+requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip state");
+requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");
+requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verification link");
+rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
+rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
+
+const registry = JSON.parse(registrySource);
+if (registry.schemaVersion !== 1 || registry.provenance?.repository !== "layrsHQ/app-smart-contracts") {
+  failures.push("Deployment registry lacks authoritative manifest provenance");
+}
+if (registry.chains?.map((chain) => chain.key).join(",") !== "horizen,base") {
+  failures.push("Deployment registry must render Horizen before Base");
+}
+for (const chain of registry.chains ?? []) {
+  const expectedExplorer = chain.key === "horizen"
+    ? "https://horizen.calderaexplorer.xyz/address/"
+    : "https://basescan.org/address/";
+  if (chain.explorer !== expectedExplorer) failures.push(`Invalid ${chain.key} explorer`);
+}
+const registryAddresses = JSON.stringify(registry).match(/0x[0-9a-fA-F]{40}/g) ?? [];
+if (registryAddresses.length < 25 || registryAddresses.some((address) => !/^0x[0-9a-fA-F]{40}$/.test(address))) {
+  failures.push("Deployment registry is missing validated manifest addresses");
+}
 
 if (failures.length > 0) {
   process.stderr.write(`${failures.join("\n")}\n`);
