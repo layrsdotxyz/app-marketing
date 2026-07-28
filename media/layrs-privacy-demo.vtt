@@ -1,25 +1,28 @@
 WEBVTT
 
-00:00.000 --> 00:08.000
-Layrs begins with a Privy-authenticated user and an attested private session.
+00:00.000 --> 00:12.000
+The production market catalog is open in a Privy-authenticated session. Layrs exposes aggregate odds while keeping the user’s balances, orders and positions private.
 
-00:08.000 --> 00:18.000
-The application displays only aggregate public market data. Balances, orders and positions remain inside confidential accounting.
+00:12.000 --> 00:24.000
+The live ZEN market shows the public Pyth reference chart and the private order surface. Individual resting orders are processed inside the attested private CLOB.
 
-00:18.000 --> 00:29.000
-A user funds the protocol or a liquidity vault, then places a private order into the TEE-protected order book.
+00:24.000 --> 00:36.000
+The Privacy page verifies the current TEE release in the browser. Funding uses controlled deposit sessions while the private ledger remains the portfolio source of truth.
 
-00:29.000 --> 00:40.000
-After the market closes, Layrs derives the deterministic Pyth median outcome and publishes settlement evidence on Horizen.
+00:36.000 --> 00:50.000
+Portfolio values and LP ownership are user-scoped. The vault surface publishes aggregate assets and strategy state without publishing the user-to-position mapping.
 
-00:40.000 --> 00:52.000
-An asynchronous RISC Zero proof binds the market, outcome and settlement commitment without delaying execution.
+00:50.000 --> 01:03.000
+Resolved-market history preserves the public outcome and settlement evidence after private execution has finished.
 
-00:52.000 --> 01:04.000
-zkVerify verifies the receipt. Layrs publishes the proof hash and settlement commitment to its non-custodial registry on Horizen.
+01:03.000 --> 01:18.000
+Iteration 0 uses RISC Zero to prove the deterministic 25-observation median resolution and settlement commitment. zkVerify verifies the receipt.
 
-01:04.000 --> 01:16.000
-Anyone can reproduce the verification from the public privacy-evidence repository and compare the result to the on-chain statement.
+01:18.000 --> 01:30.000
+Layrs publishes the proof hash and settlement commitment to the non-custodial registry on Horizen. The adoption report exposes reconciled aggregates, not private identity mappings.
 
-01:16.000 --> 01:24.000
-Private execution. Public receipt. This is Layrs on Horizen.
+01:30.000 --> 01:49.000
+The public deployment registry links the RISC Zero image ID, zkVerify verification transaction, Horizen proof-registry contract and attestation transaction for independent review.
+
+01:49.000 --> 02:09.200
+The adoption surface reports only qualifying protocol activity. Test wallets, dust, duplicate identities and failed transactions are excluded from Guardian-qualified totals.
