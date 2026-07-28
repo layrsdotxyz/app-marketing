@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": {
     "repository": "layrsHQ/app-smart-contracts",
-    "sourceCommit": "1e5ebb2e0bcb3d266dfeb178f3de6e93dcdaa646",
+    "sourceCommit": "63f7e888e354b437563177378c47bd0ddf662613",
     "manifests": {
       "base": {
         "path": "deployment/base.json",
@@ -10,7 +10,7 @@
       },
       "horizen": {
         "path": "deployment/horizen.json",
-        "sha256": "98d2a39feb670b7ed63c0c7b01a0e6fb09bd8fe8fe44910f9347d239169e78e7"
+        "sha256": "4e210e69e307315285198296b0da27bb0194647bfd4e22d9509dafd20ade058b"
       }
     }
   },
@@ -158,6 +158,33 @@
         "feeCoverage": false
       },
       "status": "deployed-source-verified-first-attestation-live"
+    },
+    {
+      "name": "LayrsZkSettlementRegistry",
+      "chain": "horizen",
+      "address": "0x6E208C57786F9fF21ab2a582cBFF69D184D9E9c1",
+      "explorerUrl": "https://horizen.calderaexplorer.xyz/address/0x6E208C57786F9fF21ab2a582cBFF69D184D9E9c1?tab=contract",
+      "sourceVerified": true,
+      "proofSystem": "RISC Zero 2.2.0",
+      "imageId": "0x563cc7ea1bdf5583d07234d48a198b41e348ac51bd4c8ae028652974284746dc",
+      "zkVerifyDomainId": 3,
+      "firstAttestation": {
+        "marketId": "layrs:v2:ZEN:15m:1784975400",
+        "marketIdHash": "0xa047273aa771ed2f83a2f20f2e860719df297357c6cbac1325455d777ebf29af",
+        "proofArtifactHash": "0x2856ee25d09834a5c73cf41c922b16c0311658ceabb629978892761749c11663",
+        "settlementCommitment": "0x6f59b9d15e2dcd67e30e87bf865131ada03d37529e4c4ccc3ae6d13462015b2d",
+        "zkVerifyTransactionHash": "0x95416f427d0a835abce97f7a4dc445c8fd2617a3a1a26161ba6d8b43a420cad8",
+        "zkVerifyAggregationId": 4227,
+        "zkVerifyLeaf": "0xa4568db11656c7686b31e36a767efd7b926b81eb4241515309422b203f70bd03",
+        "attestationTx": "0x16ec7e1ff9a3620112fd2a80fc953b3fbdbbb444f68763d7bcfa664d9981db35",
+        "attestationBlock": 21850765,
+        "openingMedianE8": "401732823",
+        "closingMedianE8": "401668671",
+        "outcome": "DOWN",
+        "payoutCoverage": false,
+        "feeCoverage": false
+      },
+      "status": "deployed-source-verified-automated-attestations-live"
     }
   ]
 }
