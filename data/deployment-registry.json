@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": {
     "repository": "layrsHQ/app-smart-contracts",
-    "sourceCommit": "63f7e888e354b437563177378c47bd0ddf662613",
+    "sourceCommit": "6a5978b53fc46250bb97898dec1c08e6dc82ccff",
     "manifests": {
       "base": {
         "path": "deployment/base.json",
@@ -10,7 +10,7 @@
       },
       "horizen": {
         "path": "deployment/horizen.json",
-        "sha256": "4e210e69e307315285198296b0da27bb0194647bfd4e22d9509dafd20ade058b"
+        "sha256": "e715a6db2142cdf01a2686225e9aa05a30f798be43d3d8fd483f15f48a9a194c"
       }
     }
   },
