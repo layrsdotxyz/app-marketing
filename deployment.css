@@ -123,6 +123,27 @@
   font-family:var(--data);font-size:12px;
 }
 .contract-asset a:hover{border-color:var(--yellow-deep);color:var(--ink);}
+.proof-evidence{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;
+  border:1px solid var(--rule);background:var(--rule);
+}
+.proof-evidence-row{
+  min-width:0;padding:10px 12px;background:var(--paper);
+}
+.proof-evidence-label{
+  display:block;margin-bottom:4px;color:var(--ink-faint);font-family:var(--data);
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+}
+.proof-evidence code,.proof-evidence a{
+  overflow-wrap:anywhere;color:var(--ink);font-family:var(--data);font-size:11px;
+}
+.proof-evidence a{border-bottom:1px dotted var(--ink-faint);}
+.proof-evidence a:hover{border-color:var(--yellow-deep);}
+.proof-scope{
+  margin:0;padding:10px 12px;border-left:3px solid var(--yellow);
+  background:color-mix(in srgb,var(--yellow) 7%,var(--paper));
+  color:var(--ink-mute);font-size:12px;line-height:1.55;
+}
 .know-more{
   position:relative;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;
   border:1px solid var(--rule);background:transparent;color:var(--ink-mute);
@@ -190,6 +211,7 @@
   .contract-address{grid-template-columns:1fr auto;}
   .contract-address-label{grid-column:1/-1;}
   .contract-tooltip{width:min(300px,82vw);}
+  .proof-evidence{grid-template-columns:1fr;}
 }
 @media (prefers-reduced-motion:reduce){
   .contract-tag.active::before{animation:none;}

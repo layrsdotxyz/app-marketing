@@ -73,6 +73,9 @@ requireText(deployment, 'id="deployment-registry-data" type="application/json"',
 requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip state");
 requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");
 requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verification link");
+requireText(deploymentScript, "github.com/layrsHQ/privacy-evidence", "public privacy evidence repository");
+requireText(deploymentScript, "zkverify.subscan.io/extrinsic", "zkVerify evidence link");
+requireText(deploymentScript, "Iteration 0", "narrow ZK proof scope");
 rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
 rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
 

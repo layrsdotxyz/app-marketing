@@ -66,6 +66,9 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /aria-expanded/);
   assert.match(deploymentScript, /navigator\.clipboard\.writeText/);
   assert.match(deploymentScript, /app\.layrs\.xyz\/privacy/);
+  assert.match(deploymentScript, /github\.com\/layrsHQ\/privacy-evidence/);
+  assert.match(deploymentScript, /zkverify\.subscan\.io\/extrinsic/);
+  assert.match(deploymentScript, /Pyth signatures, CLOB matching, payouts, fees, bridges and TEE integrity are not claimed/);
 });
 
 test("publishes the extensionless /deployment route through the normal release path", () => {

@@ -292,6 +292,89 @@
     registryRoot.appendChild(section);
   }
 
+  if (Array.isArray(registry.proofs) && registry.proofs.length > 0) {
+    const proofSection = element("section", "registry-chain proof-registry");
+    const proofHead = element("div", "registry-chain-head");
+    proofHead.append(
+      element("h2", "", "Privacy proofs"),
+      element("span", "registry-chain-id", "RISC Zero · zkVerify · Horizen"),
+    );
+    const repository = element("a", "registry-explorer", "public evidence ↗");
+    repository.href = "https://github.com/layrsHQ/privacy-evidence";
+    repository.target = "_blank";
+    repository.rel = "noopener noreferrer";
+    proofHead.appendChild(repository);
+    proofSection.appendChild(proofHead);
+    proofSection.appendChild(element("p", "registry-group-label", "Verified settlement attestations"));
+
+    const proofGrid = element("div", "registry-grid");
+    for (const proof of registry.proofs) {
+      const chain = registry.chains.find((candidate) => candidate.key === proof.chain);
+      if (!chain) continue;
+      const evidence = proof.firstAttestation;
+      const proofCard = card(chain, {
+        name: proof.name,
+        role: "Additive, non-custodial settlement-proof registry",
+        info: {
+          what: "Verifies zkVerify aggregation receipts for the versioned Layrs RISC Zero settlement program and records the bound public result on Horizen.",
+          privacy: "Iteration 0 proves the committed 25-observation median resolution without publishing individual orders, positions, balances or portfolio ownership.",
+        },
+        tags: [
+          { label: "ZK verified", className: "active" },
+          { label: "Source verified", className: "verified" },
+        ],
+        addresses: [
+          { label: "Registry", address: proof.address, primary: true },
+        ],
+      });
+
+      const evidenceRows = element("div", "proof-evidence");
+      const row = (label, value, href) => {
+        const item = element("div", "proof-evidence-row");
+        item.appendChild(element("span", "proof-evidence-label", label));
+        if (href) {
+          const link = element("a", "", value);
+          link.href = href;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          item.appendChild(link);
+        } else {
+          item.appendChild(element("code", "", value));
+        }
+        return item;
+      };
+      evidenceRows.append(
+        row("Market", evidence.marketId),
+        row("Outcome", evidence.outcome),
+        row("Proof hash", `${evidence.proofArtifactHash.slice(0, 18)}…${evidence.proofArtifactHash.slice(-8)}`),
+        row(
+          "zkVerify",
+          `domain ${proof.zkVerifyDomainId} · aggregation ${evidence.zkVerifyAggregationId} ↗`,
+          `https://zkverify.subscan.io/extrinsic/${evidence.zkVerifyTransactionHash}`,
+        ),
+        row(
+          "Horizen",
+          `${evidence.attestationTx.slice(0, 14)}…${evidence.attestationTx.slice(-8)} ↗`,
+          `https://horizen.calderaexplorer.xyz/tx/${evidence.attestationTx}`,
+        ),
+        row(
+          "Artifacts",
+          "receipt, journal, source and verifier ↗",
+          "https://github.com/layrsHQ/privacy-evidence/tree/main/evidence/iteration-0",
+        ),
+      );
+      const scope = element(
+        "p",
+        "proof-scope",
+        "Scope: resolution median and settlement binding. Pyth signatures, CLOB matching, payouts, fees, bridges and TEE integrity are not claimed by Iteration 0.",
+      );
+      proofCard.append(evidenceRows, scope);
+      proofGrid.appendChild(proofCard);
+    }
+    proofSection.appendChild(proofGrid);
+    registryRoot.appendChild(proofSection);
+  }
+
   const provenance = document.getElementById("registry-provenance");
   if (provenance) {
     provenance.textContent = `Generated from app-smart-contracts ${registry.provenance.sourceCommit.slice(0, 12)}.`;

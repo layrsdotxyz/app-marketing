@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": {
     "repository": "layrsHQ/app-smart-contracts",
-    "sourceCommit": "c422ce470b791e0140f153a32b65d3f6896b6f0c",
+    "sourceCommit": "1e5ebb2e0bcb3d266dfeb178f3de6e93dcdaa646",
     "manifests": {
       "base": {
         "path": "deployment/base.json",
@@ -10,7 +10,7 @@
       },
       "horizen": {
         "path": "deployment/horizen.json",
-        "sha256": "9f8eb4a8e5aee565dda10c000e63b521aadb8746c50319554eb62995310e60e6"
+        "sha256": "98d2a39feb670b7ed63c0c7b01a0e6fb09bd8fe8fe44910f9347d239169e78e7"
       }
     }
   },
@@ -129,6 +129,35 @@
           "active": false
         }
       ]
+    }
+  ],
+  "proofs": [
+    {
+      "name": "LayrsZkSettlementRegistry",
+      "chain": "horizen",
+      "address": "0xd2A9fC93c3d9Bc284C273A6a41c84A104a5Fb7E1",
+      "explorerUrl": "https://horizen.calderaexplorer.xyz/address/0xd2A9fC93c3d9Bc284C273A6a41c84A104a5Fb7E1?tab=contract",
+      "sourceVerified": true,
+      "proofSystem": "RISC Zero 2.2.0",
+      "imageId": "0xd8fbc25af5314af46550bbc6c2ca5ea32378ba467496617a61b2490cf442914a",
+      "zkVerifyDomainId": 3,
+      "firstAttestation": {
+        "marketId": "layrs:v3:ZEN:15m:1785196800",
+        "marketIdHash": "0x9ca4b282a364365fbc52e4a31d13ffab2e7beb8f0a35966e2b44d4e2a19be1a3",
+        "proofArtifactHash": "0x1152aad0504e4dcc0e909552bea36982dc772b9d0d6adb293d0916a10398799c",
+        "settlementCommitment": "0x350a706be747e99fa2a504e068bc664aea4bec82be3af9d0001bdb6ea9a2721d",
+        "zkVerifyTransactionHash": "0xeadf51d99524d63c9d82fea27cda0cef009a7891853a5f6f883ad96361f6df82",
+        "zkVerifyAggregationId": 4217,
+        "zkVerifyLeaf": "0x5b408be80f666cc6b30871642c8f98d7afa3cee571ed7de50fb8e7a56210572b",
+        "attestationTx": "0x86af286da173625279f5675dda235b692fae974039a098f6979654e791507ed3",
+        "attestationBlock": 21819679,
+        "openingMedianE8": "391009849",
+        "closingMedianE8": "387166933",
+        "outcome": "DOWN",
+        "payoutCoverage": false,
+        "feeCoverage": false
+      },
+      "status": "deployed-source-verified-first-attestation-live"
     }
   ]
 }

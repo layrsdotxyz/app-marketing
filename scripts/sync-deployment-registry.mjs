@@ -105,6 +105,18 @@ const output = {
       pools: poolGroups(base.value, "base"),
     },
   ],
+  proofs: Object.values(horizen.value.proofRegistries ?? {}).map((proof) => ({
+    name: proof.kind,
+    chain: "horizen",
+    address: proof.address,
+    explorerUrl: proof.explorerUrl,
+    sourceVerified: proof.sourceVerified,
+    proofSystem: `RISC Zero ${proof.riscZeroVersion}`,
+    imageId: proof.imageId,
+    zkVerifyDomainId: proof.zkVerifyDomainId,
+    firstAttestation: proof.firstAttestation,
+    status: proof.status,
+  })),
 };
 
 await mkdir(path.join(root, "data"), { recursive: true });
