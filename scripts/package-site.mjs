@@ -18,11 +18,15 @@ const publicFiles = [
   "deployment.html",
   "deployment.css",
   "deployment.js",
+  "adoption.html",
+  "demo.html",
+  "evidence.css",
+  "adoption.js",
 ];
 
 // Brand assets ship as a directory so the kit download and the individual files
 // resolve from the same place the page references.
-const publicDirs = ["brand"];
+const publicDirs = ["brand", "media"];
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });

@@ -5,12 +5,14 @@ import path from "node:path";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = (relative) => readFile(path.join(root, relative), "utf8");
 
-const [header, footer, currentHome, deploymentTemplate, registrySource] =
+const [header, footer, currentHome, deploymentTemplate, adoptionTemplate, demoTemplate, registrySource] =
   await Promise.all([
     read("partials/header.html"),
     read("partials/footer.html"),
     read("index.html"),
     read("templates/deployment.html"),
+    read("templates/adoption.html"),
+    read("templates/demo.html"),
     read("data/deployment-registry.json"),
   ]);
 
@@ -46,14 +48,22 @@ const deployment = deploymentTemplate
   .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
   .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim())
   .replace("{{LAYRS_DEPLOYMENT_REGISTRY}}", safeRegistry);
+const adoption = adoptionTemplate
+  .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
+  .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim());
+const demo = demoTemplate
+  .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
+  .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim());
 
-if (deployment.includes("{{LAYRS_")) {
-  throw new Error("unresolved deployment-page template marker");
+if ([deployment, adoption, demo].some((page) => page.includes("{{LAYRS_"))) {
+  throw new Error("unresolved public-page template marker");
 }
 
 await Promise.all([
   writeFile(path.join(root, "index.html"), home),
   writeFile(path.join(root, "deployment.html"), deployment),
+  writeFile(path.join(root, "adoption.html"), adoption),
+  writeFile(path.join(root, "demo.html"), demo),
 ]);
 
-process.stdout.write("Rendered shared homepage and deployment page layout.\n");
+process.stdout.write("Rendered shared homepage, deployment, adoption and demo layouts.\n");

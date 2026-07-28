@@ -3,13 +3,16 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, script, deployment, deploymentCss, deploymentScript, header, footer, registrySource] = await Promise.all([
+const [html, css, script, deployment, deploymentCss, deploymentScript, adoption, adoptionScript, demo, header, footer, registrySource] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "site.js"), "utf8"),
   readFile(path.join(root, "deployment.html"), "utf8"),
   readFile(path.join(root, "deployment.css"), "utf8"),
   readFile(path.join(root, "deployment.js"), "utf8"),
+  readFile(path.join(root, "adoption.html"), "utf8"),
+  readFile(path.join(root, "adoption.js"), "utf8"),
+  readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "partials", "header.html"), "utf8"),
   readFile(path.join(root, "partials", "footer.html"), "utf8"),
   readFile(path.join(root, "data", "deployment-registry.json"), "utf8"),
@@ -53,13 +56,13 @@ const headerStart = "<!-- LAYRS_SHARED_HEADER_START -->";
 const headerEnd = "<!-- LAYRS_SHARED_HEADER_END -->";
 const footerStart = "<!-- LAYRS_SHARED_FOOTER_START -->";
 const footerEnd = "<!-- LAYRS_SHARED_FOOTER_END -->";
-if (markedContent(html, headerStart, headerEnd) !== header.trim()
-    || markedContent(deployment, headerStart, headerEnd) !== header.trim()) {
-  failures.push("Homepage and deployment page must use the canonical shared header partial");
+if ([html, deployment, adoption, demo].some((page) =>
+  markedContent(page, headerStart, headerEnd) !== header.trim())) {
+  failures.push("All public pages must use the canonical shared header partial");
 }
-if (markedContent(html, footerStart, footerEnd) !== footer.trim()
-    || markedContent(deployment, footerStart, footerEnd) !== footer.trim()) {
-  failures.push("Homepage and deployment page must use the canonical shared footer partial");
+if ([html, deployment, adoption, demo].some((page) =>
+  markedContent(page, footerStart, footerEnd) !== footer.trim())) {
+  failures.push("All public pages must use the canonical shared footer partial");
 }
 
 requireText(footer, '<a href="https://docs.layrs.xyz/security">Security</a>', "merged Security footer link");
@@ -76,6 +79,15 @@ requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verificatio
 requireText(deploymentScript, "github.com/layrsHQ/privacy-evidence", "public privacy evidence repository");
 requireText(deploymentScript, "zkverify.subscan.io/extrinsic", "zkVerify evidence link");
 requireText(deploymentScript, "Iteration 0", "narrow ZK proof scope");
+requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adoption canonical URL");
+requireText(adoption, "Qualification methodology", "adoption qualification methodology");
+requireText(adoptionScript, "api.layrs.xyz/v1/milestone/adoption", "aggregate adoption API");
+requireText(adoptionScript, "uniquePrivateUserCommitments", "private commitment metric");
+requireText(demo, 'rel="canonical" href="https://layrs.xyz/demo"', "demo canonical URL");
+requireText(demo, '<track default kind="captions"', "default demo captions");
+requireText(demo, "RISC Zero proof", "demo ZK coverage");
+rejectText(adoption, /\sstyle=/i, "adoption inline style attribute");
+rejectText(demo, /\sstyle=/i, "demo inline style attribute");
 rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
 rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
 

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layrs — Adoption Evidence</title>
+<meta name="description" content="Privacy-preserving aggregate adoption evidence for Layrs Protocol.">
+<meta name="base:app_id" content="6a600856078f6baf9ef300da">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://layrs.xyz/adoption">
+<link rel="icon" href="/layrs-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/fonts-inlined.css">
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/evidence.css">
+<script src="/site.js" defer></script>
+<script src="/adoption.js" defer></script>
+</head>
+<body class="evidence-page">
+<!-- LAYRS_SHARED_HEADER_START -->
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/" aria-label="Layrs home">
+      <svg viewBox="0 0 500 500" aria-hidden="true"><path d="M149 62L242 62L247 64L248 70L99 328L96 340L100 344L408 345L411 348L409 356L361 437L144 436L41 258L39 245L142 67Z"/><path d="M360 68L368 72L463 237L465 246L462 249L262 249L259 246L264 231Z"/></svg>
+      <b>LAYRS</b>
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="/#why">Why Layrs</a>
+      <a href="/#protocol">Protocol</a>
+      <a href="/#pipeline">Pipeline</a>
+    </nav>
+    <div class="nav-right">
+      <span class="chain"><i class="dot"></i>Beta · Horizen</span>
+      <a class="btn btn-sm" href="https://app.layrs.xyz">Launch App</a>
+    </div>
+  </div>
+</header>
+<!-- LAYRS_SHARED_HEADER_END -->
+<main class="evidence-main">
+  <section class="evidence-wrap evidence-hero">
+    <p class="eyebrow">Adoption · Reconciled aggregates</p>
+    <h1>Real activity.<br><span class="evidence-mark">Private identities.</span></h1>
+    <p class="evidence-lede">This report counts meaningful protocol use without publishing the mapping between a person, their private trading identity and their portfolio.</p>
+    <div class="evidence-actions">
+      <a class="btn" href="https://api.layrs.xyz/v1/milestone/adoption" rel="external">Download JSON</a>
+      <a class="evidence-link" href="https://api.layrs.xyz/v1/milestone/adoption.csv" rel="external">Download CSV →</a>
+    </div>
+  </section>
+  <section class="evidence-wrap" aria-labelledby="metrics-title">
+    <div class="evidence-section-head">
+      <div><p class="eyebrow">Current evidence</p><h2 id="metrics-title">Qualifying activity</h2></div>
+      <p id="adoption-generated-at" class="evidence-timestamp">Loading signed report…</p>
+    </div>
+    <div id="adoption-status" class="evidence-notice" role="status">Retrieving the current aggregate report from the Layrs evidence API.</div>
+    <div id="adoption-metrics" class="metric-grid" aria-live="polite"></div>
+  </section>
+  <section class="evidence-wrap methodology">
+    <div>
+      <p class="eyebrow">Qualification methodology</p>
+      <h2>One person. One commitment. Meaningful use.</h2>
+    </div>
+    <div class="method-list">
+      <article><b>Protocol activity</b><p>Unique privacy-preserving user commitments and completed protocol actions are reported separately from the Guardian-qualified human count.</p></article>
+      <article><b>Human qualification</b><p>The qualified count remains pending until the TaskOn humanity-verification export is reconciled and staff, controlled tests, duplicates, failed transactions and dust-only activity are excluded.</p></article>
+      <article><b>Privacy boundary</b><p>The public report contains aggregates and checksums only. It never publishes wallet-to-user, identity-to-position or identity-to-portfolio mappings.</p></article>
+      <article><b>Independent checks</b><p>Counts are reconciled against immutable application receipts and public chain evidence. JSON and CSV exports carry the report timestamp and checksum.</p></article>
+    </div>
+  </section>
+</main>
+<!-- LAYRS_SHARED_FOOTER_START -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="/" aria-label="Layrs home">
+          <svg viewBox="0 0 500 500" aria-hidden="true"><path d="M149 62L242 62L247 64L248 70L99 328L96 340L100 344L408 345L411 348L409 356L361 437L144 436L41 258L39 245L142 67Z"/><path d="M360 68L368 72L463 237L465 246L462 249L262 249L259 246L264 231Z"/></svg>
+          <b>LAYRS</b>
+        </a>
+        <p class="foot-blurb">A confidential order book for prediction markets, executed in an attested enclave and settled on Horizen.</p>
+      </div>
+      <div>
+        <h4>Protocol</h4>
+        <nav><a href="https://app.layrs.xyz">Markets</a><a href="https://vaults.layrs.xyz">Vaults</a><a href="https://docs.layrs.xyz/security">Security</a><a href="/deployment">Deployment</a><a href="/demo">Demo</a><a href="/adoption">Adoption</a></nav>
+      </div>
+      <div>
+        <h4>Developers</h4>
+        <nav><a href="https://docs.layrs.xyz">Documentation</a><a href="https://github.com/layrsHQ">GitHub</a><a href="https://docs.layrs.xyz/sdk">SDK</a><a href="https://docs.layrs.xyz/verify">Verify a checkpoint</a></nav>
+      </div>
+      <div>
+        <h4>Community</h4>
+        <nav><a href="https://x.com/layrsprotocol">X / Twitter</a><a href="https://docs.layrs.xyz/community">Community</a><a href="https://docs.layrs.xyz/updates">Updates</a><a href="/brand.html">Brand kit</a></nav>
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span class="tag">© 2026 Layrs Protocol</span>
+      <span class="tag">Beta · Horizen</span>
+    </div>
+  </div>
+</footer>
+<!-- LAYRS_SHARED_FOOTER_END -->
+</body>
+</html>

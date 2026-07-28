@@ -5,11 +5,13 @@ import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, deployment, deploymentScript, publishScript, header, footer, registry] = await Promise.all([
+const [html, css, deployment, deploymentScript, adoption, demo, publishScript, header, footer, registry] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "deployment.html"), "utf8"),
   readFile(path.join(root, "deployment.js"), "utf8"),
+  readFile(path.join(root, "adoption.html"), "utf8"),
+  readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "deployment", "publish-static-release.sh"), "utf8"),
   readFile(path.join(root, "partials", "header.html"), "utf8"),
   readFile(path.join(root, "partials", "footer.html"), "utf8"),
@@ -44,7 +46,7 @@ test("contains no legacy product names or placeholder links", () => {
 });
 
 test("uses one canonical shared header and footer on both public pages", () => {
-  for (const page of [html, deployment]) {
+  for (const page of [html, deployment, adoption, demo]) {
     assert.match(page, new RegExp(header.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(page, new RegExp(footer.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -71,8 +73,20 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /Pyth signatures, CLOB matching, payouts, fees, bridges and TEE integrity are not claimed/);
 });
 
-test("publishes the extensionless /deployment route through the normal release path", () => {
-  assert.match(publishScript, /current\/deployment"/);
+test("publishes extensionless evidence routes through the normal release path", () => {
+  assert.match(publishScript, /current\/\$route"/);
   assert.match(publishScript, /content-type 'text\/html; charset=utf-8'/);
   assert.match(publishScript, /'\/deployment'/);
+  assert.match(publishScript, /for route in deployment demo adoption/);
+  assert.match(publishScript, /'\/demo'/);
+  assert.match(publishScript, /'\/adoption'/);
+});
+
+test("publishes privacy-preserving adoption evidence and a captioned demo", () => {
+  assert.match(adoption, /Qualification methodology/);
+  assert.match(adoption, /Download JSON/);
+  assert.match(adoption, /identity-to-position/);
+  assert.match(demo, /kind="captions"/);
+  assert.match(demo, /RISC Zero proof/);
+  assert.match(demo, /zkVerify verification/);
 });

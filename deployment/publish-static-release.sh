@@ -35,17 +35,20 @@ aws s3 cp "$artifact_dir/index.html" "s3://$bucket_name/current/index.html" \
   --region "$aws_region" \
   --cache-control 'public,max-age=60,must-revalidate' \
   --content-type 'text/html; charset=utf-8'
-aws s3 cp "$artifact_dir/deployment.html" "s3://$bucket_name/releases/$release_id/deployment" \
-  --region "$aws_region" \
-  --cache-control 'public,max-age=31536000,immutable' \
-  --content-type 'text/html; charset=utf-8'
-aws s3 cp "$artifact_dir/deployment.html" "s3://$bucket_name/current/deployment" \
-  --region "$aws_region" \
-  --cache-control 'public,max-age=60,must-revalidate' \
-  --content-type 'text/html; charset=utf-8'
+for route in deployment demo adoption; do
+  [[ -f "$artifact_dir/$route.html" ]] || { echo "artifact requires $route.html" >&2; exit 66; }
+  aws s3 cp "$artifact_dir/$route.html" "s3://$bucket_name/releases/$release_id/$route" \
+    --region "$aws_region" \
+    --cache-control 'public,max-age=31536000,immutable' \
+    --content-type 'text/html; charset=utf-8'
+  aws s3 cp "$artifact_dir/$route.html" "s3://$bucket_name/current/$route" \
+    --region "$aws_region" \
+    --cache-control 'public,max-age=60,must-revalidate' \
+    --content-type 'text/html; charset=utf-8'
+done
 aws cloudfront create-invalidation \
   --region "$aws_region" \
   --distribution-id "$distribution_id" \
-  --paths '/' '/index.html' '/deployment' '/deployment.html' \
+  --paths '/' '/index.html' '/deployment' '/deployment.html' '/demo' '/demo.html' '/adoption' '/adoption.html' \
   --query Invalidation.Id \
   --output text
