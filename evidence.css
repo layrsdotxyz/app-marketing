@@ -29,6 +29,9 @@
 .demo-meta{padding:24px;border:1px solid var(--rule);}
 .demo-meta ol{margin:22px 0 28px;padding-left:20px;color:var(--ink-mute);}
 .demo-meta li{margin-bottom:12px;line-height:1.5;}
+.demo-checksum{display:grid;gap:6px;margin:12px 0 0;}
+.demo-checksum span{color:var(--ink-mute);font:600 11px/1.2 var(--mono);letter-spacing:.12em;text-transform:uppercase;}
+.demo-checksum code{overflow-wrap:anywhere;font:11px/1.5 var(--mono);}
 @media(max-width:800px){
   .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .methodology,.demo-stage{grid-template-columns:1fr;}
