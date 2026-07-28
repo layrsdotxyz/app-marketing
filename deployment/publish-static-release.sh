@@ -46,9 +46,23 @@ for route in deployment demo adoption; do
     --cache-control 'public,max-age=60,must-revalidate' \
     --content-type 'text/html; charset=utf-8'
 done
+for media_file in layrs-privacy-demo.webm layrs-privacy-demo.vtt; do
+  [[ -f "$artifact_dir/media/$media_file" ]] || { echo "artifact requires media/$media_file" >&2; exit 66; }
+  aws s3 cp "$artifact_dir/media/$media_file" "s3://$bucket_name/current/media/$media_file" \
+    --region "$aws_region" \
+    --cache-control 'public,max-age=60,must-revalidate' \
+    --content-type "$(
+      if [[ "$media_file" == *.webm ]]; then
+        printf 'video/webm'
+      else
+        printf 'text/vtt; charset=utf-8'
+      fi
+    )"
+done
 aws cloudfront create-invalidation \
   --region "$aws_region" \
   --distribution-id "$distribution_id" \
   --paths '/' '/index.html' '/deployment' '/deployment.html' '/demo' '/demo.html' '/adoption' '/adoption.html' \
+    '/media/layrs-privacy-demo.webm' '/media/layrs-privacy-demo.vtt' \
   --query Invalidation.Id \
   --output text
