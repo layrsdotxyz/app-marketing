@@ -1,4 +1,5 @@
-import { cp, mkdir, rm } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -35,8 +36,21 @@ for (const file of publicFiles) {
   await cp(path.join(root, file), path.join(output, file));
 }
 
+const adoptionScript = await readFile(path.join(root, "adoption.js"));
+const adoptionScriptHash = createHash("sha256").update(adoptionScript).digest("hex").slice(0, 16);
+const adoptionScriptName = `adoption.${adoptionScriptHash}.js`;
+await writeFile(path.join(output, adoptionScriptName), adoptionScript);
+const adoptionPage = await readFile(path.join(output, "adoption.html"), "utf8");
+if (!adoptionPage.includes('src="/adoption.js"')) {
+  throw new Error("adoption page is missing its unversioned source script");
+}
+await writeFile(
+  path.join(output, "adoption.html"),
+  adoptionPage.replace('src="/adoption.js"', `src="/${adoptionScriptName}"`),
+);
+
 for (const dir of publicDirs) {
   await cp(path.join(root, dir), path.join(output, dir), { recursive: true });
 }
 
-process.stdout.write(`Packaged ${publicFiles.length} files and ${publicDirs.length} directory into ${output}\n`);
+process.stdout.write(`Packaged ${publicFiles.length} files, ${adoptionScriptName} and ${publicDirs.length} directories into ${output}\n`);

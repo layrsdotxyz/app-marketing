@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, deployment, deploymentScript, adoption, demo, publishScript, header, footer, registry] = await Promise.all([
+const [html, css, deployment, deploymentScript, adoption, demo, publishScript, packageScript, header, footer, registry] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "deployment.html"), "utf8"),
@@ -13,6 +13,7 @@ const [html, css, deployment, deploymentScript, adoption, demo, publishScript, h
   readFile(path.join(root, "adoption.html"), "utf8"),
   readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "deployment", "publish-static-release.sh"), "utf8"),
+  readFile(path.join(root, "scripts", "package-site.mjs"), "utf8"),
   readFile(path.join(root, "partials", "header.html"), "utf8"),
   readFile(path.join(root, "partials", "footer.html"), "utf8"),
   readFile(path.join(root, "data", "deployment-registry.json"), "utf8").then(JSON.parse),
@@ -81,6 +82,8 @@ test("publishes extensionless evidence routes through the normal release path", 
   assert.match(publishScript, /'\/demo'/);
   assert.match(publishScript, /'\/adoption'/);
   assert.match(publishScript, /'\/adoption\.js'/);
+  assert.match(packageScript, /adoption\.\$\{adoptionScriptHash\}\.js/);
+  assert.match(packageScript, /replace\('src="\/adoption\.js"'/);
 });
 
 test("publishes privacy-preserving adoption evidence and a captioned demo", () => {
