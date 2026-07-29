@@ -131,16 +131,9 @@ workflows:
       equal: ["true", << pipeline.parameters.deploy-production >>]
     jobs:
       - marketing-ci
-      - approve-production-deploy:
-          type: approval
-          requires:
-            - marketing-ci
-          filters:
-            branches:
-              only: main
       - deploy-production:
           requires:
-            - approve-production-deploy
+            - marketing-ci
           context:
             - layrsv2-production-deploy
           filters:
