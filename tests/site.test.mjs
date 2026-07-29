@@ -80,6 +80,7 @@ test("publishes extensionless evidence routes through the normal release path", 
   assert.match(publishScript, /for route in deployment demo adoption/);
   assert.match(publishScript, /'\/demo'/);
   assert.match(publishScript, /'\/adoption'/);
+  assert.match(publishScript, /'\/adoption\.js'/);
 });
 
 test("publishes privacy-preserving adoption evidence and a captioned demo", () => {

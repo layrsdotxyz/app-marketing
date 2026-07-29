@@ -63,6 +63,7 @@ aws cloudfront create-invalidation \
   --region "$aws_region" \
   --distribution-id "$distribution_id" \
   --paths '/' '/index.html' '/deployment' '/deployment.html' '/demo' '/demo.html' '/adoption' '/adoption.html' \
+    '/adoption.js' '/deployment.js' '/site.js' '/styles.css' '/evidence.css' \
     '/media/layrs-privacy-demo.webm' '/media/layrs-privacy-demo.vtt' \
   --query Invalidation.Id \
   --output text
