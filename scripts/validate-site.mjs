@@ -80,7 +80,10 @@ requireText(deploymentScript, "github.com/layrsHQ/privacy-evidence", "public pri
 requireText(deploymentScript, "zkverify.subscan.io/extrinsic", "zkVerify evidence link");
 requireText(deploymentScript, "Iteration 0", "narrow ZK proof scope");
 requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adoption canonical URL");
-requireText(adoption, "Qualification methodology", "adoption qualification methodology");
+requireText(adoption, "Protocol activity", "adoption activity summary");
+requireText(adoption, "Activity per private commitment", "privacy-preserving adoption cohorts");
+requireText(adoption, "SQL used by this report", "adoption query disclosure");
+requireText(adoption, "https://dune.com/queries/8146290", "independent Dune evidence");
 requireText(adoptionScript, "api.layrs.xyz/v1/milestone/adoption", "aggregate adoption API");
 requireText(adoptionScript, "uniquePrivateUserCommitments", "private commitment metric");
 requireText(demo, 'rel="canonical" href="https://layrs.xyz/demo"', "demo canonical URL");

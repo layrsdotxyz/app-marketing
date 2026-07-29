@@ -20,33 +20,101 @@
 {{LAYRS_SHARED_HEADER}}
 <!-- LAYRS_SHARED_HEADER_END -->
 <main class="evidence-main">
-  <section class="evidence-wrap evidence-hero">
-    <p class="eyebrow">Adoption · Reconciled aggregates</p>
-    <h1>Real activity.<br><span class="evidence-mark">Private identities.</span></h1>
-    <p class="evidence-lede">This report counts meaningful protocol use without publishing the mapping between a person, their private trading identity and their portfolio.</p>
-    <div class="evidence-actions">
-      <a class="btn" href="https://api.layrs.xyz/v1/milestone/adoption" rel="external">Download JSON</a>
-      <a class="evidence-link" href="https://api.layrs.xyz/v1/milestone/adoption.csv" rel="external">Download CSV →</a>
+  <section class="evidence-wrap adoption-report" aria-labelledby="adoption-title">
+    <div class="adoption-toolbar">
+      <div>
+        <p class="eyebrow">Public protocol evidence</p>
+        <h1 id="adoption-title">Adoption report</h1>
+      </div>
+      <div class="evidence-actions" aria-label="Download report">
+        <button id="download-adoption-json" class="btn" type="button" disabled>Download JSON</button>
+        <button id="download-adoption-csv" class="evidence-download" type="button" disabled>Download CSV ↓</button>
+      </div>
     </div>
-  </section>
-  <section class="evidence-wrap" aria-labelledby="metrics-title">
-    <div class="evidence-section-head">
-      <div><p class="eyebrow">Current evidence</p><h2 id="metrics-title">Qualifying activity</h2></div>
-      <p id="adoption-generated-at" class="evidence-timestamp">Loading signed report…</p>
+    <div class="adoption-provenance">
+      <p><b>Primary source</b><span>Internal PostgreSQL reporting read model</span></p>
+      <p><b>Chain evidence</b><span>Confirmed Horizen settlement artifacts and indexed Base/Horizen contract events</span></p>
+      <p><b>Refresh policy</b><span>Internal snapshot refreshes every 3 hours; Dune runs are deliberately rate-limited</span></p>
+    </div>
+
+    <div class="evidence-section-head adoption-section-head">
+      <div><p class="eyebrow">Current snapshot</p><h2>Protocol activity</h2></div>
+      <p id="adoption-generated-at" class="evidence-timestamp">Loading report…</p>
     </div>
     <div id="adoption-status" class="evidence-notice" role="status">Retrieving the current aggregate report from the Layrs evidence API.</div>
-    <div id="adoption-metrics" class="metric-grid" aria-live="polite"></div>
-  </section>
-  <section class="evidence-wrap methodology">
-    <div>
-      <p class="eyebrow">Qualification methodology</p>
-      <h2>One person. One commitment. Meaningful use.</h2>
+
+    <div class="adoption-table-wrap">
+      <table class="adoption-table">
+        <thead><tr><th>Metric</th><th>Value</th><th>Source</th><th>Definition</th></tr></thead>
+        <tbody id="adoption-summary"></tbody>
+      </table>
     </div>
-    <div class="method-list">
-      <article><b>Protocol activity</b><p>Unique privacy-preserving user commitments and completed protocol actions are reported separately from the Guardian-qualified human count.</p></article>
-      <article><b>Human qualification</b><p>The qualified count remains pending until the TaskOn humanity-verification export is reconciled and staff, controlled tests, duplicates, failed transactions and dust-only activity are excluded.</p></article>
-      <article><b>Privacy boundary</b><p>The public report contains aggregates and checksums only. It never publishes wallet-to-user, identity-to-position or identity-to-portfolio mappings.</p></article>
-      <article><b>Independent checks</b><p>Counts are reconciled against immutable application receipts and public chain evidence. JSON and CSV exports carry the report timestamp and checksum.</p></article>
+
+    <div class="evidence-section-head adoption-section-head">
+      <div><p class="eyebrow">Activity ledger</p><h2>Recorded interactions</h2></div>
+    </div>
+    <div class="adoption-table-wrap">
+      <table class="adoption-table">
+        <thead><tr><th>Activity</th><th>Network</th><th>Asset / state</th><th>Count</th><th>Recorded value</th><th>Evidence source</th></tr></thead>
+        <tbody id="adoption-activity"></tbody>
+      </table>
+    </div>
+
+    <div class="evidence-section-head adoption-section-head">
+      <div><p class="eyebrow">Privacy-preserving cohort</p><h2>Activity per private commitment</h2></div>
+    </div>
+    <div class="adoption-table-wrap adoption-table-wrap--compact">
+      <table class="adoption-table">
+        <thead><tr><th>Recorded interactions</th><th>Private commitments</th><th>Disclosure</th></tr></thead>
+        <tbody id="adoption-buckets"></tbody>
+      </table>
+    </div>
+
+    <div class="evidence-section-head adoption-section-head">
+      <div><p class="eyebrow">Reproducibility</p><h2>SQL used by this report</h2></div>
+      <p class="evidence-timestamp">Read-only aggregate queries · no address output</p>
+    </div>
+    <p class="adoption-query-note">These are the production report queries. Chain-backed rows are read from tables populated by confirmed settlement publishers and chain indexers; the dashboard does not query an RPC endpoint in the browser.</p>
+    <div id="adoption-queries" class="adoption-queries"></div>
+
+    <div class="adoption-checksum">
+      <span>Report checksum</span>
+      <code id="adoption-checksum">Pending</code>
+    </div>
+
+    <div class="evidence-section-head adoption-section-head">
+      <div><p class="eyebrow">Independent verification</p><h2>On-chain proof sources</h2></div>
+    </div>
+    <div class="adoption-table-wrap">
+      <table class="adoption-table">
+        <thead><tr><th>Evidence</th><th>Network</th><th>Coverage</th><th>Independent source</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Contract interactions and token flow</td>
+            <td>Base</td>
+            <td>Successful calls, unique callers, USDC/ZEN/WETH pool and vault flow</td>
+            <td><a class="adoption-source-link" href="https://dune.com/queries/8146290" target="_blank" rel="noreferrer">Open Dune query ↗</a></td>
+          </tr>
+          <tr>
+            <td>Private fill settlement batches</td>
+            <td>Horizen</td>
+            <td>Confirmed public audit batches emitted after private matching</td>
+            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0xEbdE1b32a86a5B2ff782E075b40e58F96B8b3DB7" target="_blank" rel="noreferrer">MatchSettlement ↗</a></td>
+          </tr>
+          <tr>
+            <td>Market outcomes</td>
+            <td>Horizen</td>
+            <td>Published resolution transactions and outcome evidence</td>
+            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x9e11B80bF69C1d28C0E29540D3b0900370135A85" target="_blank" rel="noreferrer">AdminOracle ↗</a></td>
+          </tr>
+          <tr>
+            <td>ZK settlement attestations</td>
+            <td>Horizen</td>
+            <td>RISC Zero receipt commitments verified by zkVerify and attested on Horizen</td>
+            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x6E208C57786F9fF21ab2a582cBFF69D184D9E9c1" target="_blank" rel="noreferrer">ZK registry ↗</a></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </main>

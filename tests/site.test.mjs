@@ -83,9 +83,13 @@ test("publishes extensionless evidence routes through the normal release path", 
 });
 
 test("publishes privacy-preserving adoption evidence and a captioned demo", () => {
-  assert.match(adoption, /Qualification methodology/);
+  assert.match(adoption, /Protocol activity/);
+  assert.match(adoption, /Activity per private commitment/);
+  assert.match(adoption, /SQL used by this report/);
+  assert.match(adoption, /dune\.com\/queries\/8146290/);
+  assert.doesNotMatch(adoption, /TaskOn reconciliation/);
   assert.match(adoption, /Download JSON/);
-  assert.match(adoption, /identity-to-position/);
+  assert.match(adoption, /no address output/);
   assert.match(demo, /kind="captions"/);
   assert.match(demo, /RISC Zero proof/);
   assert.match(demo, /zkVerify verification/);
