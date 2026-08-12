@@ -5,9 +5,10 @@ import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, deployment, deploymentScript, adoption, demo, publishScript, packageScript, header, footer, registry] = await Promise.all([
+const [html, css, siteScript, deployment, deploymentScript, adoption, demo, publishScript, packageScript, header, footer, registry] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
+  readFile(path.join(root, "site.js"), "utf8"),
   readFile(path.join(root, "deployment.html"), "utf8"),
   readFile(path.join(root, "deployment.js"), "utf8"),
   readFile(path.join(root, "adoption.html"), "utf8"),
@@ -28,6 +29,28 @@ test("plays a self-hosted, muted hero video without blocking reduced-motion user
   assert.match(html, /<video class="hero-video" autoplay muted loop playsinline/);
   assert.match(html, /<source src="hero-bg\.mp4" type="video\/mp4">/);
   assert.match(css, /prefers-reduced-motion:reduce[\s\S]*\.hero-video\{display:none;\}/);
+});
+
+test("keeps the original hero intact inside a full-bleed accessible carousel", () => {
+  assert.match(html, /class="hero-stage" data-hero-carousel/);
+  assert.match(html, /class="hero-slide hero-slide-primary is-active"/);
+  assert.match(html, /class="hero-slide hero-slide-vaults"/);
+  assert.match(html, /Built on[\s\S]*horizen-logo-yellow\.svg[\s\S]*Vault/);
+  assert.match(css, /\.hero-stage\{[\s\S]*width:100%/);
+  assert.match(siteScript, /prefers-reduced-motion: reduce/);
+  assert.match(siteScript, /setAttribute\("aria-hidden"/);
+});
+
+test("keeps the vault slide theme-aware and renders a truthful live market tape", () => {
+  assert.match(css, /\.hero-slide-vaults\{[\s\S]*var\(--paper\)[\s\S]*var\(--board\)/);
+  assert.match(css, /\.vault-node\{[\s\S]*var\(--paper\)/);
+  assert.match(html, /data-live-market-ticker/);
+  assert.match(html, /data-market-ticker-status aria-live="polite"/);
+  assert.doesNotMatch(html, /BTC &gt; \$120,000|Fed cuts at the next meeting|ZK rollup TVL doubles/);
+  assert.match(siteScript, /https:\/\/api\.layrs\.xyz\/v1\/markets/);
+  assert.match(siteScript, /upProbabilityMillionths/);
+  assert.match(siteScript, /TICKER_REFRESH_MS = 30_000/);
+  assert.match(siteScript, /Live market tape temporarily unavailable/);
 });
 
 test("keeps redaction keyboard accessible", () => {
