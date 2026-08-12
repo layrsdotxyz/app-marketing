@@ -37,6 +37,10 @@ test("keeps the original hero intact inside a full-bleed accessible carousel", (
   assert.match(html, /class="hero-slide hero-slide-vaults"/);
   assert.match(html, /Built on[\s\S]*horizen-logo-yellow\.svg[\s\S]*Vault/);
   assert.match(css, /\.hero-stage\{[\s\S]*width:100%/);
+  assert.match(css, /\.hero-slide\{[\s\S]*position:absolute;inset:0/);
+  assert.match(css, /\.hero-slide\.is-active\{[\s\S]*position:relative/);
+  assert.match(css, /\.hero\{[\s\S]*min-height:clamp\(650px/);
+  assert.doesNotMatch(css, /\.vault-hero\{[^}]*min-height/);
   assert.match(siteScript, /prefers-reduced-motion: reduce/);
   assert.match(siteScript, /setAttribute\("aria-hidden"/);
 });
