@@ -49,8 +49,38 @@ await writeFile(
   adoptionPage.replace('src="/adoption.js"', `src="/${adoptionScriptName}"`),
 );
 
+// The mutable /current release is updated before CloudFront invalidation has
+// necessarily reached every edge. Content-address the shared homepage assets
+// so fresh HTML can never be paired with an older stylesheet or script during
+// that propagation window.
+const sharedAssets = await Promise.all(
+  ["styles.css", "site.js"].map(async (file) => {
+    const contents = await readFile(path.join(root, file));
+    const hash = createHash("sha256").update(contents).digest("hex").slice(0, 16);
+    const extension = path.extname(file);
+    const name = `${path.basename(file, extension)}.${hash}${extension}`;
+    await writeFile(path.join(output, name), contents);
+    return [file, name];
+  }),
+);
+
+for (const pageName of ["index.html", "deployment.html", "adoption.html", "demo.html", "brand.html"]) {
+  const pagePath = path.join(output, pageName);
+  let page = await readFile(pagePath, "utf8");
+  for (const [sourceName, versionedName] of sharedAssets) {
+    page = page
+      .replaceAll(`href="/${sourceName}"`, `href="/${versionedName}"`)
+      .replaceAll(`href="${sourceName}"`, `href="/${versionedName}"`)
+      .replaceAll(`src="/${sourceName}"`, `src="/${versionedName}"`)
+      .replaceAll(`src="${sourceName}"`, `src="/${versionedName}"`);
+  }
+  await writeFile(pagePath, page);
+}
+
 for (const dir of publicDirs) {
   await cp(path.join(root, dir), path.join(output, dir), { recursive: true });
 }
 
-process.stdout.write(`Packaged ${publicFiles.length} files, ${adoptionScriptName} and ${publicDirs.length} directories into ${output}\n`);
+process.stdout.write(
+  `Packaged ${publicFiles.length} files, ${adoptionScriptName}, ${sharedAssets.map(([, name]) => name).join(", ")} and ${publicDirs.length} directories into ${output}\n`,
+);

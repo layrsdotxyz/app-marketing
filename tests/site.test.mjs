@@ -111,6 +111,9 @@ test("publishes extensionless evidence routes through the normal release path", 
   assert.match(publishScript, /'\/adoption\.js'/);
   assert.match(packageScript, /adoption\.\$\{adoptionScriptHash\}\.js/);
   assert.match(packageScript, /replace\('src="\/adoption\.js"'/);
+  assert.match(packageScript, /\["styles\.css", "site\.js"\]/);
+  assert.match(packageScript, /versionedName/);
+  assert.doesNotMatch(publishScript, /current\/"[\s\S]{0,120}--delete/);
 });
 
 test("publishes privacy-preserving adoption evidence and a captioned demo", () => {
