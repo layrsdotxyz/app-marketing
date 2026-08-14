@@ -72,6 +72,7 @@ rollback-production:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
       when: manual
+      allow_failure: true
   variables:
     LAYRSV2_PRIMARY_REGION: us-east-1
   script:
