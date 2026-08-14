@@ -46,6 +46,7 @@
     --yes:#3DD598;
     --no:#F2705C;
   }
+  :root:not([data-theme="light"]) .brand svg{fill:var(--yellow);}
 }
 :root[data-theme="dark"]{
   --paper:#030E24;
@@ -60,6 +61,7 @@
   --yes:#3DD598;
   --no:#F2705C;
 }
+:root[data-theme="dark"] .brand svg{fill:var(--yellow);}
 :root[data-theme="light"]{
   --paper:#FFFFFF;
   --board:#F4F3EF;
