@@ -64,6 +64,8 @@ test("keeps redaction keyboard accessible", () => {
 
 test("keeps marker and scoped footer selectors", () => {
   assert.match(css, /\.mark\{[\s\S]*box-decoration-break:clone/);
+  assert.match(css, /:root:not\(\[data-theme="light"\]\) \.brand svg\{fill:var\(--yellow\);\}/);
+  assert.match(css, /:root\[data-theme="dark"\] \.brand svg\{fill:var\(--yellow\);\}/);
   assert.match(css, /\.foot-grid nav a\{/);
   assert.doesNotMatch(css, /(?:^|\})\s*\.foot-grid a\{/m);
 });
