@@ -1,0 +1,50 @@
+stages: [fast, full, mirror]
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+default:
+  interruptible: true
+  tags: [layrs, fast, x86]
+  cache:
+    key: { files: [package-lock.json] }
+    paths: [.npm/]
+
+marketing-fast:
+  stage: fast
+  script:
+    - npm ci --ignore-scripts --cache .npm --prefer-offline
+    - npm run check
+    - npm test
+
+marketing-full:
+  stage: full
+  needs: [marketing-fast]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  script:
+    - npm ci --ignore-scripts --cache .npm --prefer-offline
+    - npm run build
+    - |
+      if git grep -I -n -E '(ghp_[A-Za-z0-9_]{20,}|privy_app_secret_[A-Za-z0-9]{20,}|cfat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16})' -- . ':!package-lock.json'; then exit 1; fi
+
+mirror-github:
+  stage: mirror
+  tags: [layrs, deploy, x86]
+  interruptible: false
+  needs: [marketing-full]
+  resource_group: github-mirror-app-marketing
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+  script:
+    - |
+      export GITHUB_MIRROR_TOKEN
+      GITHUB_MIRROR_TOKEN=$(aws secretsmanager get-secret-value --region us-east-1 --secret-id layrs/gitlab/github-mirror-token --query SecretString --output text)
+      helper='!f() { printf "%s\n" username=x-access-token "password=$GITHUB_MIRROR_TOKEN"; }; f'
+      remote="https://github.com/layrsHQ/${CI_PROJECT_NAME}.git"
+      git -c credential.helper= -c "credential.helper=$helper" push "$remote" "${CI_COMMIT_SHA}:refs/heads/${CI_DEFAULT_BRANCH}"
+      test "$(git -c credential.helper= -c "credential.helper=$helper" ls-remote "$remote" "refs/heads/${CI_DEFAULT_BRANCH}" | awk '{print $1}')" = "$CI_COMMIT_SHA"
+      unset GITHUB_MIRROR_TOKEN
