@@ -30,6 +30,7 @@ const REPORT_QUERIES = [
   UNION ALL SELECT count(*)::numeric FROM layrsv2.deposit_sessions
   UNION ALL SELECT count(*)::numeric FROM layrsv2.withdrawals
   UNION ALL SELECT count(*)::numeric FROM layrsv2.audit_fill_artifacts
+  UNION ALL SELECT count(*)::numeric FROM layrsv2.private_user_receipt_evidence
 )
 SELECT
   (SELECT count(*) FROM identities) AS unique_private_user_commitments,
@@ -129,6 +130,7 @@ const toCsv = (report) => {
   rows.push(["summary", "", "private_sessions", "active", report.summary.activePrivateSessions]);
   rows.push(["summary", "", "private_sessions", "total", report.summary.totalPrivateSessions]);
   rows.push(["summary", "", "privacy_features", "usage_count", report.summary.privacyFeatureUsageCount]);
+  rows.push(["summary", "", "private_receipts", "activity_count", report.summary.privateReceiptActivityCount]);
   report.identityActivityBuckets.forEach((item) => rows.push(["identity_activity", "", item.bucket, "commitments", item.commitments]));
   report.funding.deposits.forEach((item) => rows.push(["deposit", item.chain, item.asset, "count", item.count], ["deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
   report.funding.withdrawals.forEach((item) => rows.push(["withdrawal", item.chain, item.asset, "count", item.count], ["withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
@@ -154,7 +156,8 @@ const enableDownload = (button, name, type, makeBody) => {
 const render = (report) => {
   const summaryRows = [
     ["Unique private commitments", firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US"), "Internal DB", "Distinct opaque commitments across session and funding records"],
-    ["Privacy-feature interactions", firstNumber(report, ["summary.privacyFeatureUsageCount"]).toLocaleString("en-US"), "Internal DB", "Sessions, funding actions and confirmed private fills"],
+    ["Privacy-feature interactions", firstNumber(report, ["summary.privacyFeatureUsageCount"]).toLocaleString("en-US"), "Internal DB", "Sessions, funding actions, private commands and confirmed fills"],
+    ["Enclave-signed private commands", firstNumber(report, ["summary.privateReceiptActivityCount"]).toLocaleString("en-US"), "TEE receipt evidence", "User-owned receipts for orders, cancellations and other private commands"],
     ["Active private sessions", firstNumber(report, ["summary.activePrivateSessions"]).toLocaleString("en-US"), "Internal DB", "Unrevoked, unexpired attested sessions"],
     ["Total private sessions", firstNumber(report, ["summary.totalPrivateSessions"]).toLocaleString("en-US"), "Internal DB", "All recorded attested session starts"],
     ["Confirmed private fills", firstNumber(report, ["trading.confirmedAuditFills"]).toLocaleString("en-US"), "Horizen evidence", "Fill artifacts with confirmed on-chain audit status"],

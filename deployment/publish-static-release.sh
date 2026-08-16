@@ -20,7 +20,7 @@ caller_arn=$(aws sts get-caller-identity --query Arn --output text)
   exit 77
 }
 
-release_id=${CIRCLE_SHA1:-${GITHUB_SHA:-}}
+release_id=${CI_COMMIT_SHA:-${CIRCLE_SHA1:-${GITHUB_SHA:-}}}
 [[ "$release_id" =~ ^[0-9a-f]{40}$ ]] || { echo 'immutable 40-byte release SHA required' >&2; exit 65; }
 
 aws s3 sync "$artifact_dir" "s3://$bucket_name/releases/$release_id/" \
@@ -29,7 +29,6 @@ aws s3 sync "$artifact_dir" "s3://$bucket_name/releases/$release_id/" \
   --cache-control 'public,max-age=31536000,immutable'
 aws s3 sync "s3://$bucket_name/releases/$release_id/" "s3://$bucket_name/current/" \
   --region "$aws_region" \
-  --delete \
   --only-show-errors
 aws s3 cp "$artifact_dir/index.html" "s3://$bucket_name/current/index.html" \
   --region "$aws_region" \

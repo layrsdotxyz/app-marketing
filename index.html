@@ -47,11 +47,13 @@
 
 <!-- ════════ HERO ════════ -->
 <main id="top">
-<section class="wrap hero">
-  <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
-    <source src="hero-bg.mp4" type="video/mp4">
-  </video>
-  <div>
+<section class="hero-stage" data-hero-carousel aria-roledescription="carousel" aria-label="Layrs product highlights">
+  <article class="hero-slide hero-slide-primary is-active" data-hero-slide aria-hidden="false">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+      <source src="hero-bg.mp4" type="video/mp4">
+    </video>
+    <div class="wrap hero">
+    <div>
     <div class="eyebrow r d1">
       <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L96 88 L4 88 Z"/></svg>
       <span>Confidential order book · Horizen</span>
@@ -114,26 +116,59 @@
       <span class="tag">What leaves your browser</span>
       <span class="k">Ciphertext only</span>
     </div>
+    </div>
+    </div>
+  </article>
+
+  <article class="hero-slide hero-slide-vaults" data-hero-slide aria-hidden="true">
+    <div class="wrap hero vault-hero">
+      <div class="vault-copy">
+        <div class="vault-network-lockup">
+          <span>Built on</span>
+          <img src="/brand/horizen-logo-yellow.svg" alt="Horizen">
+          <strong>Vault</strong>
+        </div>
+        <div class="eyebrow vault-eyebrow">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 8 L96 88 L4 88 Z"/></svg>
+          <span>ZEN staking meets private liquidity</span>
+        </div>
+        <h1 class="lede vault-lede">Delta neutral<br><span>vaults.</span></h1>
+        <p class="sub vault-sub">Automated ZEN yield, private LP accounting and market-neutral liquidity—working together in one vault.</p>
+        <div class="vault-features" aria-label="Vault features">
+          <span>Auto-compounding</span><span>Private accounting</span><span>Onchain vaults</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn" href="https://vaults.layrs.xyz">Enter the vaults <span class="arw">→</span></a>
+          <span class="vault-mainnet">Live on Horizen Mainnet</span>
+        </div>
+      </div>
+
+      <div class="vault-visual" aria-hidden="true">
+        <div class="vault-orbit vault-orbit-outer"></div>
+        <div class="vault-orbit vault-orbit-middle"></div>
+        <div class="vault-orbit vault-orbit-inner"></div>
+        <div class="vault-core"><span class="vault-horizen-mark"></span></div>
+        <div class="vault-node vault-node-strategy"><span>Strategy</span><b><i></i>ZEN Staking</b></div>
+        <div class="vault-node vault-node-accounting"><span>Accounting</span><b><i></i>Private by default</b></div>
+        <div class="vault-node vault-node-engine"><span>Vault engine</span><b><i></i>Auto-compounding</b></div>
+        <span class="vault-delta">Δ</span>
+      </div>
+    </div>
+  </article>
+
+  <div class="hero-controls" role="group" aria-label="Choose hero banner">
+    <button class="hero-dot is-active" type="button" data-hero-target="0" aria-label="Show private markets" aria-current="true"></button>
+    <button class="hero-dot" type="button" data-hero-target="1" aria-label="Show Delta Neutral Vaults" aria-current="false"></button>
   </div>
 </section>
 </main>
 
 <!-- ════════ TICKER ════════ -->
-<div class="ticker" aria-hidden="true">
-  <div class="ticker-track">
-    <span>ETH &gt; $4,000 · Q close <b>63¢</b></span>
-    <span>BTC &gt; $120,000 by year end <b>41¢</b></span>
-    <span>Fed cuts at the next meeting <b>28¢</b></span>
-    <span>ZK rollup TVL doubles this quarter <b>55¢</b></span>
-    <span>Horizen mainnet ships in H2 <b>72¢</b></span>
-    <span>Sub-second proving on consumer hardware <b>34¢</b></span>
-    <span>ETH &gt; $4,000 · Q close <b>63¢</b></span>
-    <span>BTC &gt; $120,000 by year end <b>41¢</b></span>
-    <span>Fed cuts at the next meeting <b>28¢</b></span>
-    <span>ZK rollup TVL doubles this quarter <b>55¢</b></span>
-    <span>Horizen mainnet ships in H2 <b>72¢</b></span>
-    <span>Sub-second proving on consumer hardware <b>34¢</b></span>
+<div class="ticker" data-live-market-ticker aria-label="Live Layrs markets">
+  <div class="ticker-track" data-market-ticker-track>
+    <a href="https://app.layrs.xyz/markets"><span class="ticker-state">Live</span> Loading open markets…</a>
   </div>
+  <p class="sr-only" data-market-ticker-status aria-live="polite">Loading live Layrs market prices.</p>
 </div>
 
 <!-- ════════ WHY A HIDDEN BOOK ════════ -->
