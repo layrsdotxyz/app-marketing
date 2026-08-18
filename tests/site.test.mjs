@@ -82,6 +82,8 @@ test("uses one canonical shared header and footer on both public pages", () => {
   }
   assert.match(footer, /docs\.layrs\.xyz\/security">Security/);
   assert.match(footer, /href="\/deployment">Deployment/);
+  assert.match(footer, /href="https:\/\/x\.com\/layrslab">X \/ Twitter/);
+  assert.doesNotMatch(footer, /layrsprotocol/i);
   assert.doesNotMatch(footer, /\/attestation/);
 });
 

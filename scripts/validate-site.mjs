@@ -67,6 +67,8 @@ if ([html, deployment, adoption, demo].some((page) =>
 
 requireText(footer, '<a href="https://docs.layrs.xyz/security">Security</a>', "merged Security footer link");
 requireText(footer, '<a href="/deployment">Deployment</a>', "Deployment footer link");
+requireText(footer, '<a href="https://x.com/layrslab">X / Twitter</a>', "canonical X account link");
+rejectText(footer, /layrsprotocol/i, "retired X account reference");
 rejectText(footer, /docs\.layrs\.xyz\/attestation/i, "separate Attestation footer link");
 
 requireText(deployment, '<link rel="canonical" href="https://layrs.xyz/deployment">', "deployment canonical URL");
