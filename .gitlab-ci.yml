@@ -50,10 +50,10 @@ deploy-production:
     - npm run build
     - >-
       deployment/gitlab-deploy-static.sh
-      arn:aws:iam::255638996474:role/layrsv2-production-marketing-deploy
+      arn:aws:iam::082223548516:role/layrs-production-marketing-deploy
       dist
-      layrsv2-255638996474-us-east-1-production-marketing
-      E2AW6DQEDS3UQ
+      layrs-082223548516-us-east-1-production-marketing
+      E950OG28C4DYF
       https://layrs.xyz/
   artifacts:
     when: always
@@ -79,10 +79,10 @@ rollback-production:
     - test -n "${ROLLBACK_RELEASE_SHA:-}"
     - >-
       deployment/gitlab-rollback-static.sh
-      arn:aws:iam::255638996474:role/layrsv2-production-marketing-deploy
+      arn:aws:iam::082223548516:role/layrs-production-marketing-deploy
       "$ROLLBACK_RELEASE_SHA"
-      layrsv2-255638996474-us-east-1-production-marketing
-      E2AW6DQEDS3UQ
+      layrs-082223548516-us-east-1-production-marketing
+      E950OG28C4DYF
       https://layrs.xyz/
   artifacts:
     when: always
