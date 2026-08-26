@@ -5,7 +5,7 @@ import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, siteScript, deployment, deploymentScript, adoption, demo, publishScript, packageScript, header, footer, registry] = await Promise.all([
+const [html, css, siteScript, deployment, deploymentScript, adoption, demo, publishScript, rollbackScript, pipeline, packageScript, header, footer, registry] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "site.js"), "utf8"),
@@ -14,6 +14,8 @@ const [html, css, siteScript, deployment, deploymentScript, adoption, demo, publ
   readFile(path.join(root, "adoption.html"), "utf8"),
   readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "deployment", "publish-static-release.sh"), "utf8"),
+  readFile(path.join(root, "deployment", "gitlab-rollback-static.sh"), "utf8"),
+  readFile(path.join(root, ".gitlab-ci.yml"), "utf8"),
   readFile(path.join(root, "scripts", "package-site.mjs"), "utf8"),
   readFile(path.join(root, "partials", "header.html"), "utf8"),
   readFile(path.join(root, "partials", "footer.html"), "utf8"),
@@ -118,6 +120,21 @@ test("publishes extensionless evidence routes through the normal release path", 
   assert.match(packageScript, /\["styles\.css", "site\.js"\]/);
   assert.match(packageScript, /versionedName/);
   assert.doesNotMatch(publishScript, /current\/"[\s\S]{0,120}--delete/);
+});
+
+test("binds production marketing publication and rollback to the live Layrs account", () => {
+  const expectedRole = "arn:aws:iam::082223548516:role/layrs-production-marketing-deploy";
+  const expectedBucket = "layrs-082223548516-us-east-1-production-marketing";
+  const expectedDistribution = "E950OG28C4DYF";
+  assert.equal((pipeline.match(new RegExp(expectedRole, "g")) ?? []).length, 2);
+  assert.equal((pipeline.match(new RegExp(expectedBucket, "g")) ?? []).length, 2);
+  assert.equal((pipeline.match(new RegExp(expectedDistribution, "g")) ?? []).length, 2);
+  assert.match(publishScript, /arn:aws:sts::082223548516:assumed-role\/layrs-production-marketing-deploy\/\*/);
+  assert.match(publishScript, /layrs-082223548516-us-east-1-production-marketing/);
+  assert.match(rollbackScript, /layrs-082223548516-us-east-1-production-marketing/);
+  for (const controlled of [pipeline, publishScript, rollbackScript]) {
+    assert.doesNotMatch(controlled, /255638996474|layrsv2-255638996474|E2AW6DQEDS3UQ/);
+  }
 });
 
 test("publishes privacy-preserving adoption evidence and a captioned demo", () => {

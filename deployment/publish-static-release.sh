@@ -12,11 +12,14 @@ distribution_id=$3
 aws_region=$4
 
 [[ -f "$artifact_dir/index.html" ]] || { echo 'artifact requires index.html' >&2; exit 66; }
-[[ "$bucket_name" == layrsv2-* ]] || { echo 'bucket must start with layrsv2-' >&2; exit 65; }
+[[ "$bucket_name" == layrs-082223548516-us-east-1-production-marketing ]] || {
+  echo 'unexpected production marketing bucket' >&2
+  exit 65
+}
 
 caller_arn=$(aws sts get-caller-identity --query Arn --output text)
-[[ "$caller_arn" != *':root' && "$caller_arn" == *':assumed-role/layrsv2-'* ]] || {
-  echo 'least-privilege layrsv2 role required' >&2
+[[ "$caller_arn" == arn:aws:sts::082223548516:assumed-role/layrs-production-marketing-deploy/* ]] || {
+  echo 'exact production marketing deploy role required' >&2
   exit 77
 }
 

@@ -18,7 +18,10 @@ aws_region=${LAYRSV2_PRIMARY_REGION:-us-east-1}
   exit 77
 }
 [[ "$release_sha" =~ ^[0-9a-f]{40}$ ]] || { echo 'immutable 40-byte release SHA required' >&2; exit 65; }
-[[ "$bucket_name" == layrsv2-* ]] || { echo 'bucket must start with layrsv2-' >&2; exit 65; }
+[[ "$bucket_name" == layrs-082223548516-us-east-1-production-marketing ]] || {
+  echo 'unexpected production marketing bucket' >&2
+  exit 65
+}
 
 credentials=$(aws sts assume-role \
   --region "$aws_region" \
