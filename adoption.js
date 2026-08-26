@@ -131,6 +131,12 @@ const toCsv = (report) => {
   rows.push(["summary", "", "private_sessions", "total", report.summary.totalPrivateSessions]);
   rows.push(["summary", "", "privacy_features", "usage_count", report.summary.privacyFeatureUsageCount]);
   rows.push(["summary", "", "private_receipts", "activity_count", report.summary.privateReceiptActivityCount]);
+  if (report.lifetime) {
+    const unique = report.lifetime.uniquePrivateUserCommitments;
+    rows.push(["lifetime", "", "private_commitments", "deduplicated_minimum", unique.deduplicatedMinimum]);
+    rows.push(["lifetime", "", "private_commitments", "undeduplicated_maximum", unique.undeduplicatedMaximum]);
+    Object.entries(report.lifetime.additive).forEach(([metric, value]) => rows.push(["lifetime", "", "additive", metric, value]));
+  }
   report.identityActivityBuckets.forEach((item) => rows.push(["identity_activity", "", item.bucket, "commitments", item.commitments]));
   report.funding.deposits.forEach((item) => rows.push(["deposit", item.chain, item.asset, "count", item.count], ["deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
   report.funding.withdrawals.forEach((item) => rows.push(["withdrawal", item.chain, item.asset, "count", item.count], ["withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
@@ -154,14 +160,19 @@ const enableDownload = (button, name, type, makeBody) => {
 };
 
 const render = (report) => {
+  const lifetimeUnique = report.lifetime?.uniquePrivateUserCommitments;
+  const lifetime = report.lifetime?.additive;
+  const uniqueLabel = lifetimeUnique
+    ? `${lifetimeUnique.deduplicatedMinimum.toLocaleString("en-US")}–${lifetimeUnique.undeduplicatedMaximum.toLocaleString("en-US")}`
+    : firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US");
   const summaryRows = [
-    ["Unique private commitments", firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US"), "Internal DB", "Distinct opaque commitments across session and funding records"],
-    ["Privacy-feature interactions", firstNumber(report, ["summary.privacyFeatureUsageCount"]).toLocaleString("en-US"), "Internal DB", "Sessions, funding actions, private commands and confirmed fills"],
-    ["Enclave-signed private commands", firstNumber(report, ["summary.privateReceiptActivityCount"]).toLocaleString("en-US"), "TEE receipt evidence", "User-owned receipts for orders, cancellations and other private commands"],
+    ["Lifetime unique private commitments", uniqueLabel, "Legacy + fresh epochs", lifetimeUnique ? "Deduplicated minimum to undeduplicated maximum; no blind cross-epoch sum" : "Distinct opaque commitments across session and funding records"],
+    ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Legacy + fresh epochs", "Metric-specific additive total; financial ledgers remain separate"],
+    ["Lifetime enclave-signed private commands", (lifetime?.privateReceiptActivityCount ?? firstNumber(report, ["summary.privateReceiptActivityCount"])).toLocaleString("en-US"), "TEE receipt evidence", "User-owned receipts across closed legacy and fresh epochs"],
     ["Active private sessions", firstNumber(report, ["summary.activePrivateSessions"]).toLocaleString("en-US"), "Internal DB", "Unrevoked, unexpired attested sessions"],
-    ["Total private sessions", firstNumber(report, ["summary.totalPrivateSessions"]).toLocaleString("en-US"), "Internal DB", "All recorded attested session starts"],
-    ["Confirmed private fills", firstNumber(report, ["trading.confirmedAuditFills"]).toLocaleString("en-US"), "Horizen evidence", "Fill artifacts with confirmed on-chain audit status"],
-    ["Confirmed resolutions", firstNumber(report, ["trading.confirmedResolutionTransactions"]).toLocaleString("en-US"), "Horizen evidence", "Confirmed on-chain market-resolution transactions"],
+    ["Lifetime private sessions", (lifetime?.totalPrivateSessions ?? firstNumber(report, ["summary.totalPrivateSessions"])).toLocaleString("en-US"), "Legacy + fresh epochs", "Metric-specific additive total of attested session starts"],
+    ["Lifetime confirmed private fills", (lifetime?.confirmedAuditFills ?? firstNumber(report, ["trading.confirmedAuditFills"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed audit fills across epochs"],
+    ["Lifetime confirmed resolutions", (lifetime?.confirmedResolutionTransactions ?? firstNumber(report, ["trading.confirmedResolutionTransactions"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed market-resolution transactions across epochs"],
   ];
   summary.replaceChildren(...summaryRows.map((values) => row(values.map((value, index) => [value, index === 1 ? "adoption-value" : ""]))));
 
