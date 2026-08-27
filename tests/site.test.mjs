@@ -1,17 +1,21 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import test from "node:test";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const [html, css, siteScript, deployment, deploymentScript, adoption, demo, publishScript, rollbackScript, pipeline, packageScript, header, footer, registry] = await Promise.all([
+const [html, css, siteScript, deployment, deploymentScript, adoption, adoptionScript, legacyAdoption, legacyAdoptionManifest, demo, publishScript, rollbackScript, pipeline, packageScript, header, footer, registry] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "styles.css"), "utf8"),
   readFile(path.join(root, "site.js"), "utf8"),
   readFile(path.join(root, "deployment.html"), "utf8"),
   readFile(path.join(root, "deployment.js"), "utf8"),
   readFile(path.join(root, "adoption.html"), "utf8"),
+  readFile(path.join(root, "adoption.js"), "utf8"),
+  readFile(path.join(root, "legacy-adoption-3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7.json")),
+  readFile(path.join(root, "legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1.json")),
   readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "deployment", "publish-static-release.sh"), "utf8"),
   readFile(path.join(root, "deployment", "gitlab-rollback-static.sh"), "utf8"),
@@ -145,6 +149,13 @@ test("publishes privacy-preserving adoption evidence and a captioned demo", () =
   assert.doesNotMatch(adoption, /TaskOn reconciliation/);
   assert.match(adoption, /Download JSON/);
   assert.match(adoption, /no address output/);
+  assert.equal(legacyAdoption.length, 2932);
+  assert.equal(legacyAdoption.at(-1), 0x0a);
+  assert.equal(createHash("sha256").update(legacyAdoption.subarray(0, -1)).digest("hex"), "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7");
+  assert.equal(createHash("sha256").update(legacyAdoptionManifest).digest("hex"), "364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1");
+  assert.match(adoptionScript, /SIGNED_IMMUTABLE_LEGACY_DB_CAPTURE|legacy-adoption-3fb3d9ac/);
+  assert.match(adoptionScript, /deduplicatedMinimum === lifetimeUnique\.undeduplicatedMaximum/);
+  assert.match(packageScript, /legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1\.json/);
   assert.match(demo, /kind="captions"/);
   assert.match(demo, /RISC Zero proof/);
   assert.match(demo, /zkVerify verification/);
