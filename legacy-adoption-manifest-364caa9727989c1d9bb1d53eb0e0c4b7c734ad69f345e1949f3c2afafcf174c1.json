@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "layrs.adoption-historical-epoch-manifest.v1",
+  "manifestCreatedAt": "2026-08-26T12:06:30.648Z",
+  "epoch": {
+    "id": "legacy-through-20260826T101325496Z",
+    "historicalCutoff": "2026-08-26T10:13:25.496Z",
+    "classification": "CLOSED_HISTORICAL_EVIDENCE",
+    "freshEpochContinuityClaim": false,
+    "freshEpochLedgerImport": false,
+    "freshEpochCounterImport": false
+  },
+  "captures": [
+    {
+      "name": "legacy-dashboard",
+      "relativePath": ".codex-review-bundles/layrs-fresh-epoch-migration-20260826/legacy-dashboard.json",
+      "contentType": "application/json",
+      "bytes": 41594,
+      "sha256": "79952ae945a21c7062d98ac5852254538c6568f645a40df59d83d8babd966a1a",
+      "sourceSchemaVersion": "layrs.milestone-dashboard.v1",
+      "generatedAt": "2026-08-26T10:26:46.081Z",
+      "window": {
+        "from": "1970-01-01T00:00:00.000Z",
+        "to": "2026-08-26T10:13:25.496Z"
+      }
+    },
+    {
+      "name": "adoption-api-json",
+      "relativePath": ".codex-review-bundles/layrs-fresh-epoch-migration-20260826/adoption-api.json",
+      "contentType": "application/json",
+      "bytes": 2931,
+      "sha256": "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7",
+      "sourceProtocol": "layrs.milestone-adoption.v1",
+      "generatedAt": "2026-08-24T21:00:30.260Z",
+      "reportChecksumSha256": "0xd7b672c7923fb9d2398472857a3e0359d8ac956fb72bc4d77e5070df29321980"
+    },
+    {
+      "name": "adoption-api-csv",
+      "relativePath": ".codex-review-bundles/layrs-fresh-epoch-migration-20260826/adoption-api.csv",
+      "contentType": "text/csv",
+      "bytes": 1775,
+      "sha256": "3324a9efb474a08f363050fde2f126d6ad08a4726dd788992e99eaaf81820c4c",
+      "sourceProtocol": "layrs.milestone-adoption.v1",
+      "reportChecksumSha256": "0xd7b672c7923fb9d2398472857a3e0359d8ac956fb72bc4d77e5070df29321980"
+    }
+  ],
+  "digestCorrection": {
+    "field": "legacy-dashboard.json sha256",
+    "suppliedValue": "79952ae945a21c7062d98ac5852254538c6568f645a40df59d83d8babd966a1",
+    "suppliedHexLength": 63,
+    "boundComputedValue": "79952ae945a21c7062d98ac5852254538c6568f645a40df59d83d8babd966a1a",
+    "policy": "Bind the locally recomputed 64-hex SHA-256; do not pad or otherwise invent a digest."
+  },
+  "historicalMetrics": {
+    "dashboard": {
+      "totalUserActivityEvents": 6573,
+      "uniquePrivateCommitments": 261,
+      "byEventType": {
+        "bridge": 38,
+        "deposit": 268,
+        "private_session": 6102,
+        "withdrawal": 165
+      }
+    },
+    "adoptionApi": {
+      "uniquePrivateUserCommitments": 261,
+      "activePrivateSessions": 61,
+      "totalPrivateSessions": 6102,
+      "privacyFeatureUsageCount": 42865,
+      "privateReceiptActivityCount": 35880,
+      "confirmedAuditFills": 449,
+      "confirmedAuditBatches": 449,
+      "confirmedResolutionTransactions": 137,
+      "qualificationStatus": "PENDING_HUMAN_VERIFICATION_RECONCILIATION",
+      "guardianQualifiedUniqueUsers": null
+    }
+  },
+  "privacy": {
+    "rawWalletAddressesIncluded": false,
+    "rawDepositAddressesIncluded": false,
+    "rawIdentityCommitmentsIncluded": false,
+    "perUserRowsIncluded": false,
+    "publicWalletAddressesExposed": false,
+    "userAddressMappingsExposed": false
+  },
+  "interpretation": {
+    "status": "HISTORICAL_ONLY",
+    "freshEpochStartsAtZero": true,
+    "cumulativePresentationAllowedOnlyWithSeparateEpochLabels": true,
+    "claims": [
+      "The capture hashes and the metrics reproduced here identify legacy-epoch evidence only.",
+      "The adoption API capture predates the cutoff; this manifest does not claim that its values were recomputed exactly at the cutoff.",
+      "Guardian-qualified unique-user evidence remains unresolved and is not inferred from protocol activity.",
+      "No user history, private ledger row, balance, order, receipt, cursor, or aggregate counter is authorized for import into the fresh epoch."
+    ]
+  }
+}

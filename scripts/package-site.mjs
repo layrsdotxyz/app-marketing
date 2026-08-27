@@ -23,6 +23,8 @@ const publicFiles = [
   "demo.html",
   "evidence.css",
   "adoption.js",
+  "legacy-adoption-3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7.json",
+  "legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1.json",
 ];
 
 // Brand assets ship as a directory so the kit download and the individual files

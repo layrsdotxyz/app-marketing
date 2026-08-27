@@ -16,6 +16,63 @@ const firstNumber = (source, keys) => {
   return 0;
 };
 
+const LEGACY_ADOPTION_CAPTURE = {
+  epochId: "legacy-through-20260826T101325496Z",
+  capturePath: "/legacy-adoption-3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7.json",
+  captureSha256: "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7",
+  manifestPath: "/legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1.json",
+  manifestSha256: "364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1",
+  manifestObjectKey: "fresh-epoch-migration/20260826/adoption/adoption-historical-epoch-manifest.json",
+  manifestObjectVersionId: "8kyCqLqd6GIKA0o2q4sfSPh9i6xvB2kz",
+};
+
+const sha256Hex = async (bytes) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))]
+  .map((value) => value.toString(16).padStart(2, "0")).join("");
+
+const fetchBytes = async (path) => {
+  const response = await fetch(path, { cache: "force-cache" });
+  if (!response.ok) throw new Error(`historical adoption capture returned ${response.status}`);
+  return response.arrayBuffer();
+};
+
+const loadHistoricalAdoption = async (report) => {
+  const [captureBytes, manifestBytes] = await Promise.all([
+    fetchBytes(LEGACY_ADOPTION_CAPTURE.capturePath),
+    fetchBytes(LEGACY_ADOPTION_CAPTURE.manifestPath),
+  ]);
+  // The immutable capture is minified JSON without a trailing newline. The
+  // static-site package stores text assets with one packaging newline; bind
+  // provenance to the original bytes and reject every other transformation.
+  const packagedCapture = new Uint8Array(captureBytes);
+  if (packagedCapture.length !== 2932 || packagedCapture.at(-1) !== 0x0a) {
+    throw new Error("historical adoption capture packaging mismatch");
+  }
+  const provenanceCaptureBytes = packagedCapture.slice(0, -1);
+  const [captureHash, manifestHash] = await Promise.all([
+    sha256Hex(provenanceCaptureBytes),
+    sha256Hex(manifestBytes),
+  ]);
+  if (captureHash !== LEGACY_ADOPTION_CAPTURE.captureSha256
+      || manifestHash !== LEGACY_ADOPTION_CAPTURE.manifestSha256) {
+    throw new Error("historical adoption artifact hash mismatch");
+  }
+  const capture = JSON.parse(new TextDecoder().decode(provenanceCaptureBytes));
+  const manifest = JSON.parse(new TextDecoder().decode(manifestBytes));
+  const epoch = report.epochs?.historical?.find(({ epochId }) => epochId === LEGACY_ADOPTION_CAPTURE.epochId);
+  const manifestCapture = manifest.captures?.find(({ name }) => name === "adoption-api-json");
+  if (!epoch
+      || epoch.manifestSha256 !== `0x${manifestHash}`
+      || epoch.manifestObjectKey !== LEGACY_ADOPTION_CAPTURE.manifestObjectKey
+      || epoch.manifestObjectVersionId !== LEGACY_ADOPTION_CAPTURE.manifestObjectVersionId
+      || manifest.epoch?.id !== LEGACY_ADOPTION_CAPTURE.epochId
+      || manifestCapture?.sha256 !== captureHash
+      || manifestCapture?.reportChecksumSha256 !== capture.reportChecksumSha256
+      || capture.protocol !== "layrs.milestone-adoption.v1") {
+    throw new Error("historical adoption provenance mismatch");
+  }
+  return capture;
+};
+
 const REPORT_QUERIES = [
   {
     title: "Private identities and protocol usage",
@@ -111,6 +168,20 @@ const formatAtomic = (value, asset) => {
   return `${whole}${fraction ? `.${fraction}` : ""} ${asset}`;
 };
 
+const historicalAdoptionSnapshots = (report, legacySnapshot) => legacySnapshot ? [{
+  epochId: LEGACY_ADOPTION_CAPTURE.epochId,
+  label: report.epochs.historical.find(({ epochId }) => epochId === LEGACY_ADOPTION_CAPTURE.epochId)?.label,
+  snapshot: legacySnapshot,
+}] : [];
+
+const adoptionActivityRows = (source, label, evidence) => [
+  ...(source.funding?.deposits ?? []).map((item) => [`${label} deposit`, item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), evidence]),
+  ...(source.funding?.withdrawals ?? []).map((item) => [`${label} withdrawal`, item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), evidence]),
+  ...(source.funding?.bridges ?? []).map((item) => [`${label} bridge`, item.direction.replaceAll("_", " → "), item.status, item.count, formatAtomic(item.sourceAmountAtomic, "ZEN"), evidence]),
+  ...(source.trading?.fills ?? []).map((item) => [`${label} private fill`, item.chain, `${item.markets} market${item.markets === 1 ? "" : "s"}`, item.count, `${(Number(item.quantityAtomic) / 1_000_000).toLocaleString("en-US")} contracts`, evidence]),
+  ...(source.vaults?.events ?? []).map((item) => [`${label} vault ${item.event.toLowerCase()}`, item.chain, "LPVault", item.count, "—", evidence]),
+];
+
 const reportForDownload = (report) => {
   const { qualification: _qualification, methodology = [], ...rest } = report;
   return {
@@ -124,7 +195,7 @@ const reportForDownload = (report) => {
   };
 };
 
-const toCsv = (report) => {
+const toCsv = (report, legacySnapshot) => {
   const rows = [["category", "network", "asset_or_state", "metric", "value"]];
   rows.push(["summary", "", "private_commitments", "unique", report.summary.uniquePrivateUserCommitments]);
   rows.push(["summary", "", "private_sessions", "active", report.summary.activePrivateSessions]);
@@ -137,6 +208,14 @@ const toCsv = (report) => {
     rows.push(["lifetime", "", "private_commitments", "undeduplicated_maximum", unique.undeduplicatedMaximum]);
     Object.entries(report.lifetime.additive).forEach(([metric, value]) => rows.push(["lifetime", "", "additive", metric, value]));
   }
+  historicalAdoptionSnapshots(report, legacySnapshot).forEach(({ epochId, snapshot }) => {
+    snapshot.identityActivityBuckets.forEach((item) => rows.push(["historical_identity_activity", epochId, item.bucket, "commitments", item.commitments]));
+    snapshot.funding.deposits.forEach((item) => rows.push(["historical_deposit", item.chain, item.asset, "count", item.count], ["historical_deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+    snapshot.funding.withdrawals.forEach((item) => rows.push(["historical_withdrawal", item.chain, item.asset, "count", item.count], ["historical_withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+    snapshot.funding.bridges.forEach((item) => rows.push(["historical_bridge", item.direction, item.status, "count", item.count], ["historical_bridge", item.direction, item.status, "source_amount_atomic", item.sourceAmountAtomic]));
+    snapshot.trading.fills.forEach((item) => rows.push(["historical_trade", item.chain, "confirmed_fills", "count", item.count]));
+    snapshot.vaults.events.forEach((item) => rows.push(["historical_vault", item.chain, item.event, "count", item.count]));
+  });
   report.identityActivityBuckets.forEach((item) => rows.push(["identity_activity", "", item.bucket, "commitments", item.commitments]));
   report.funding.deposits.forEach((item) => rows.push(["deposit", item.chain, item.asset, "count", item.count], ["deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
   report.funding.withdrawals.forEach((item) => rows.push(["withdrawal", item.chain, item.asset, "count", item.count], ["withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
@@ -159,14 +238,20 @@ const enableDownload = (button, name, type, makeBody) => {
   };
 };
 
-const render = (report) => {
+const render = (report, legacySnapshot) => {
   const lifetimeUnique = report.lifetime?.uniquePrivateUserCommitments;
   const lifetime = report.lifetime?.additive;
   const uniqueLabel = lifetimeUnique
-    ? `${lifetimeUnique.deduplicatedMinimum.toLocaleString("en-US")}–${lifetimeUnique.undeduplicatedMaximum.toLocaleString("en-US")}`
+    ? lifetimeUnique.deduplicatedMinimum === lifetimeUnique.undeduplicatedMaximum
+      ? lifetimeUnique.deduplicatedMinimum.toLocaleString("en-US")
+      : `${lifetimeUnique.deduplicatedMinimum.toLocaleString("en-US")}–${lifetimeUnique.undeduplicatedMaximum.toLocaleString("en-US")}`
     : firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US");
   const summaryRows = [
-    ["Lifetime unique private commitments", uniqueLabel, "Legacy + fresh epochs", lifetimeUnique ? "Deduplicated minimum to undeduplicated maximum; no blind cross-epoch sum" : "Distinct opaque commitments across session and funding records"],
+    ["Lifetime unique private commitments", uniqueLabel, "Legacy + fresh epochs", lifetimeUnique
+      ? lifetimeUnique.deduplicatedMinimum === lifetimeUnique.undeduplicatedMaximum
+        ? "Exact current lifetime bound; legacy and fresh bounds coincide"
+        : "Deduplicated minimum to undeduplicated maximum; no blind cross-epoch sum"
+      : "Distinct opaque commitments across session and funding records"],
     ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Legacy + fresh epochs", "Metric-specific additive total; financial ledgers remain separate"],
     ["Lifetime enclave-signed private commands", (lifetime?.privateReceiptActivityCount ?? firstNumber(report, ["summary.privateReceiptActivityCount"])).toLocaleString("en-US"), "TEE receipt evidence", "User-owned receipts across closed legacy and fresh epochs"],
     ["Active private sessions", firstNumber(report, ["summary.activePrivateSessions"]).toLocaleString("en-US"), "Internal DB", "Unrevoked, unexpired attested sessions"],
@@ -176,19 +261,21 @@ const render = (report) => {
   ];
   summary.replaceChildren(...summaryRows.map((values) => row(values.map((value, index) => [value, index === 1 ? "adoption-value" : ""]))));
 
+  const historicalSnapshots = historicalAdoptionSnapshots(report, legacySnapshot);
   const activityRows = [
-    ...report.funding.deposits.map((item) => ["Deposit", item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), "Pool-confirmed receipt"]),
-    ...report.funding.withdrawals.map((item) => ["Withdrawal", item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), "Confirmed payout record"]),
-    ...report.funding.bridges.map((item) => ["Bridge", item.direction.replaceAll("_", " → "), item.status, item.count, formatAtomic(item.sourceAmountAtomic, "ZEN"), "Monitored bridge intent"]),
-    ...report.trading.fills.map((item) => ["Private fill", item.chain, `${item.markets} market${item.markets === 1 ? "" : "s"}`, item.count, `${(Number(item.quantityAtomic) / 1_000_000).toLocaleString("en-US")} contracts`, "Confirmed Horizen audit artifact"]),
-    ...report.vaults.events.map((item) => [`Vault ${item.event.toLowerCase()}`, item.chain, "LPVault", item.count, "—", "Indexed contract event"]),
+    ...historicalSnapshots.flatMap(({ snapshot }) => adoptionActivityRows(snapshot, "Legacy", "Signed legacy DB capture")),
+    ...adoptionActivityRows(report, "Fresh", "Fresh epoch evidence"),
   ];
   activity.replaceChildren(...activityRows.map((values) => row(values.map((value, index) => [value, index === 3 ? "adoption-value" : ""]))));
 
-  buckets.replaceChildren(...report.identityActivityBuckets.map((item) => row([
-    [`${item.bucket} interactions`, ""],
+  const bucketRows = [
+    ...historicalSnapshots.flatMap(({ snapshot }) => snapshot.identityActivityBuckets.map((item) => ({ ...item, epoch: "Legacy" }))),
+    ...report.identityActivityBuckets.map((item) => ({ ...item, epoch: "Fresh" })),
+  ];
+  buckets.replaceChildren(...bucketRows.map((item) => row([
+    [`${item.bucket} interactions · ${item.epoch.toLowerCase()} epoch`, ""],
     [item.commitments.toLocaleString("en-US"), "adoption-value"],
-    ["Aggregate only; commitment values withheld", ""],
+    [`${item.epoch} aggregate only; commitment values withheld`, ""],
   ])));
 
   queries.replaceChildren(...REPORT_QUERIES.map((definition) => {
@@ -217,7 +304,7 @@ const render = (report) => {
 
   const downloadable = reportForDownload(report);
   enableDownload(downloadJson, "layrs-adoption.json", "application/json", () => `${JSON.stringify(downloadable, null, 2)}\n`);
-  enableDownload(downloadCsv, "layrs-adoption.csv", "text/csv;charset=utf-8", () => `${toCsv(downloadable)}\n`);
+  enableDownload(downloadCsv, "layrs-adoption.csv", "text/csv;charset=utf-8", () => `${toCsv(downloadable, legacySnapshot)}\n`);
 };
 
 const loadReport = () => fetch(`https://api.layrs.xyz/v1/milestone/adoption?at=${Date.now()}`, {
@@ -227,7 +314,7 @@ const loadReport = () => fetch(`https://api.layrs.xyz/v1/milestone/adoption?at=$
 }).then((response) => {
   if (!response.ok) throw new Error(`report returned ${response.status}`);
   return response.json();
-}).then(render).catch(() => {
+}).then(async (report) => render(report, await loadHistoricalAdoption(report))).catch(() => {
   if (!summary.childElementCount) {
     status.dataset.state = "error";
     status.textContent = "The production evidence API is unavailable. No cached figures are shown.";
