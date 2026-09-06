@@ -39,7 +39,7 @@ home = replaceMarked(
 );
 
 const registry = JSON.parse(registrySource);
-if (registry.schemaVersion !== 1 || !Array.isArray(registry.chains)
+if (registry.schemaVersion !== 2 || !Array.isArray(registry.chains)
     || registry.chains.length !== 2) {
   throw new Error("invalid generated deployment registry");
 }
