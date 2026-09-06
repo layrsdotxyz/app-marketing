@@ -79,8 +79,8 @@ requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip sta
 requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");
 requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verification link");
 requireText(deploymentScript, "github.com/layrsHQ/privacy-evidence", "public privacy evidence repository");
-requireText(deploymentScript, "zkverify.subscan.io/extrinsic", "zkVerify evidence link");
-requireText(deploymentScript, "Iteration 0", "narrow ZK proof scope");
+requireText(deploymentScript, "Runtime status", "truthful proof runtime status");
+requireText(deploymentScript, "Publication status is independent", "proof scope boundary");
 requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adoption canonical URL");
 requireText(adoption, "Protocol activity", "adoption activity summary");
 requireText(adoption, "Activity per private commitment", "privacy-preserving adoption cohorts");
@@ -97,8 +97,8 @@ rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
 rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
 
 const registry = JSON.parse(registrySource);
-if (registry.schemaVersion !== 1 || registry.provenance?.repository !== "layrsHQ/app-smart-contracts") {
-  failures.push("Deployment registry lacks authoritative manifest provenance");
+if (registry.schemaVersion !== 2 || registry.provenance?.repository !== "Layrs active production protocol registry") {
+  failures.push("Deployment registry lacks active-production provenance");
 }
 if (registry.chains?.map((chain) => chain.key).join(",") !== "horizen,base") {
   failures.push("Deployment registry must render Horizen before Base");
@@ -110,8 +110,8 @@ for (const chain of registry.chains ?? []) {
   if (chain.explorer !== expectedExplorer) failures.push(`Invalid ${chain.key} explorer`);
 }
 const registryAddresses = JSON.stringify(registry).match(/0x[0-9a-fA-F]{40}/g) ?? [];
-if (registryAddresses.length < 25 || registryAddresses.some((address) => !/^0x[0-9a-fA-F]{40}$/.test(address))) {
-  failures.push("Deployment registry is missing validated manifest addresses");
+if (registryAddresses.length < 16 || registryAddresses.some((address) => !/^0x[0-9a-fA-F]{40}$/.test(address))) {
+  failures.push("Deployment registry is missing validated active-production addresses");
 }
 
 if (failures.length > 0) {

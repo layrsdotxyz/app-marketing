@@ -93,11 +93,16 @@ test("uses one canonical shared header and footer on both public pages", () => {
   assert.doesNotMatch(footer, /\/attestation/);
 });
 
-test("publishes a manifest-generated Horizen-first deployment registry", () => {
-  assert.equal(registry.provenance.repository, "layrsHQ/app-smart-contracts");
+test("publishes an active-production Horizen-first deployment registry", () => {
+  assert.equal(registry.provenance.repository, "Layrs active production protocol registry");
+  assert.equal(registry.schemaVersion, 2);
   assert.deepEqual(registry.chains.map(({ key }) => key), ["horizen", "base"]);
   assert.equal(registry.chains[0].explorer, "https://horizen.calderaexplorer.xyz/address/");
   assert.equal(registry.chains[1].explorer, "https://basescan.org/address/");
+  assert.equal(registry.chains[0].core.matchSettlement.proxy, "0x406716f6ca3578715622250c47efb88728b98beb");
+  assert.equal(registry.chains[0].core.adminOracle.proxy, "0x0237dfce14d1d66ca58948a6273e400cb3f00976");
+  assert.equal(registry.chains[1].core.matchSettlement.proxy, "0xbc07a1b88b403db43a79809c615cdb26f20f12a8");
+  assert.equal(registry.chains[1].core.adminOracle.proxy, "0xf5835af406473dc5a100605ea162781e9daf5abc");
   assert.match(deployment, /Every address,[\s\S]*verifiable[\s\S]*on-chain/);
   assert.match(deployment, /name="base:app_id" content="6a600856078f6baf9ef300da"/);
 });
@@ -107,8 +112,8 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /navigator\.clipboard\.writeText/);
   assert.match(deploymentScript, /app\.layrs\.xyz\/privacy/);
   assert.match(deploymentScript, /github\.com\/layrsHQ\/privacy-evidence/);
-  assert.match(deploymentScript, /zkverify\.subscan\.io\/extrinsic/);
-  assert.match(deploymentScript, /Pyth signatures, CLOB matching, payouts, fees, bridges and TEE integrity are not claimed/);
+  assert.match(deploymentScript, /Runtime status/);
+  assert.match(deploymentScript, /Publication status is independent/);
 });
 
 test("publishes extensionless evidence routes through the normal release path", () => {

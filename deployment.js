@@ -215,12 +215,15 @@
         role: copy.role,
         info: copy,
         tags: [
-          { label: "Proxy", className: "proxy" },
-          { label: "Verified", className: "verified" },
+          { label: "Active runtime", className: "active" },
+          ...(addresses.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
+          ...(addresses.rolesVerified ? [{ label: "Roles verified", className: "verified" }] : []),
         ],
         addresses: [
           { label: "Proxy", address: addresses.proxy, primary: true },
-          { label: "Implementation", address: addresses.implementation, primary: false },
+          ...(addresses.implementation
+            ? [{ label: "Implementation", address: addresses.implementation, primary: false }]
+            : []),
         ],
       }));
     }
@@ -236,12 +239,12 @@
       for (const adapter of pool.adapters) {
         addresses.push({ label: "Adapter", address: adapter.address, primary: false });
       }
-      if (pool.pool) addresses.push(
+      if (pool.pool?.implementation) addresses.push(
         { label: "Pool impl", address: pool.pool.implementation, primary: false },
       );
-      addresses.push(
-        { label: "Vault impl", address: pool.vault.implementation, primary: false },
-      );
+      if (pool.vault.implementation) {
+        addresses.push({ label: "Vault impl", address: pool.vault.implementation, primary: false });
+      }
       container.appendChild(card(chain, {
         name: pool.pool ? `${pool.symbol} LayrsPool + Vault` : `${pool.symbol} LP Vault`,
         role: pool.role,
@@ -305,23 +308,22 @@
     repository.rel = "noopener noreferrer";
     proofHead.appendChild(repository);
     proofSection.appendChild(proofHead);
-    proofSection.appendChild(element("p", "registry-group-label", "Verified settlement attestations"));
+    proofSection.appendChild(element("p", "registry-group-label", "Current production proof registries"));
 
     const proofGrid = element("div", "registry-grid");
     for (const proof of registry.proofs) {
       const chain = registry.chains.find((candidate) => candidate.key === proof.chain);
       if (!chain) continue;
-      const evidence = proof.firstAttestation;
       const proofCard = card(chain, {
         name: proof.name,
-        role: "Additive, non-custodial settlement-proof registry",
+        role: proof.role ?? "Additive, non-custodial settlement-proof registry",
         info: {
-          what: "Verifies zkVerify aggregation receipts for the versioned Layrs RISC Zero settlement program and records the bound public result on Horizen.",
-          privacy: "Iteration 0 proves the committed 25-observation median resolution without publishing individual orders, positions, balances or portfolio ownership.",
+          what: "Publishes additive public evidence while keeping private instructions, positions, balances and portfolio ownership outside the public payload.",
+          privacy: "Registry publication is separate from confidential execution and does not reveal the private order book.",
         },
         tags: [
-          { label: "ZK verified", className: "active" },
-          { label: "Source verified", className: "verified" },
+          { label: proof.enabled ? "Enabled" : "Disabled", className: proof.enabled ? "active" : "" },
+          ...(proof.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
         ],
         addresses: [
           { label: "Registry", address: proof.address, primary: true },
@@ -343,30 +345,11 @@
         }
         return item;
       };
-      evidenceRows.append(
-        row("Market", evidence.marketId),
-        row("Outcome", evidence.outcome),
-        row("Proof hash", `${evidence.proofArtifactHash.slice(0, 18)}…${evidence.proofArtifactHash.slice(-8)}`),
-        row(
-          "zkVerify",
-          `domain ${proof.zkVerifyDomainId} · aggregation ${evidence.zkVerifyAggregationId} ↗`,
-          `https://zkverify.subscan.io/extrinsic/${evidence.zkVerifyTransactionHash}`,
-        ),
-        row(
-          "Horizen",
-          `${evidence.attestationTx.slice(0, 14)}…${evidence.attestationTx.slice(-8)} ↗`,
-          `https://horizen.calderaexplorer.xyz/tx/${evidence.attestationTx}`,
-        ),
-        row(
-          "Artifacts",
-          "receipt, journal, source and verifier ↗",
-          "https://github.com/layrsHQ/privacy-evidence/tree/main/evidence/iteration-0",
-        ),
-      );
+      evidenceRows.append(row("Runtime status", proof.status));
       const scope = element(
         "p",
         "proof-scope",
-        "Scope: resolution median and settlement binding. Pyth signatures, CLOB matching, payouts, fees, bridges and TEE integrity are not claimed by Iteration 0.",
+        "Publication status is independent of matching, payout, fee, bridge and confidential-execution correctness.",
       );
       proofCard.append(evidenceRows, scope);
       proofGrid.appendChild(proofCard);
@@ -377,7 +360,9 @@
 
   const provenance = document.getElementById("registry-provenance");
   if (provenance) {
-    provenance.textContent = `Generated from app-smart-contracts ${registry.provenance.sourceCommit.slice(0, 12)}.`;
+    provenance.textContent = registry.provenance.snapshotAt
+      ? `Active production registry snapshot: ${registry.provenance.snapshotAt}. ${registry.provenance.note ?? ""}`
+      : `Generated from app-smart-contracts ${registry.provenance.sourceCommit.slice(0, 12)}.`;
   }
 
   document.addEventListener("click", () => {
