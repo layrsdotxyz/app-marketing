@@ -73,7 +73,7 @@ rejectText(footer, /docs\.layrs\.xyz\/attestation/i, "separate Attestation foote
 
 requireText(deployment, '<link rel="canonical" href="https://layrs.xyz/deployment">', "deployment canonical URL");
 requireText(deployment, '<meta name="base:app_id" content="6a600856078f6baf9ef300da">', "Base app metadata");
-requireText(deployment, 'Every address, <span class="deployment-redact">verifiable</span> on-chain.', "deployment title");
+requireText(deployment, 'Production contracts and <span class="deployment-redact">evidence registries</span>.', "deployment title");
 requireText(deployment, 'id="deployment-registry-data" type="application/json"', "embedded generated registry");
 requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip state");
 requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");

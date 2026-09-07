@@ -32,10 +32,10 @@
 <main class="deployment-main">
   <section class="deployment-wrap deployment-hero" aria-labelledby="deployment-title">
     <p class="eyebrow">Contract Registry · Mainnet</p>
-    <h1 id="deployment-title">Every address, <span class="deployment-redact">verifiable</span> on-chain.</h1>
-    <p class="deployment-lede">The active <strong>Layrs Protocol</strong> runtime contracts on Horizen and Base. Each active endpoint links to its block-explorer page, with a privacy-safe TEE receipt verifier for owner-shared actions. Use <span class="kmhint">Know more</span> on any contract to see what it does and how privacy is enforced.</p>
+    <h1 id="deployment-title">Production contracts and <span class="deployment-redact">evidence registries</span>.</h1>
+    <p class="deployment-lede">The active <strong>Layrs Protocol</strong> runtime contracts on Horizen and Base. Runtime endpoints link to their block-explorer pages. After confirmed Horizen anchoring, the verifier checks an issued owner receipt or an allowlisted public system receipt without exposing private command fields. Use <span class="kmhint">Know more</span> on any contract to see what it does and how privacy is enforced.</p>
     <div class="deployment-meta" aria-label="Deployment metadata">
-      <span class="deployment-chip"><span class="registry-dot"></span><b>Source-verified</b></span>
+      <span class="deployment-chip"><span class="registry-dot"></span><b>Runtime endpoints role-verified</b></span>
       <span class="deployment-chip">Networks <b>Horizen · Base</b></span>
       <span class="deployment-chip">Pattern <b>UUPS proxy</b></span>
       <span class="deployment-chip">Assets <b>ZEN · USDC · ETH</b></span>
@@ -46,7 +46,7 @@
 
   <aside class="deployment-wrap registry-note">
     <span>Layrs Protocol · Contract Registry</span>
-    <p>Only active, role-verified runtime endpoints are shown. Implementation addresses are withheld until independently re-verified against the current runtime registry. TEE links verify an owner-shared signed action and timestamp without revealing wallet, email or private command fields.</p>
+    <p>Runtime endpoints are active and role-verified. Separately listed evidence registries show their own publication and source-verification status. The verifier requires an issued receipt ID and, for owner actions, an owner-issued capability. It verifies only confirmed Horizen anchors and does not expose wallet, email, amount, destination or private command fields.</p>
     <p class="registry-provenance" id="registry-provenance"></p>
   </aside>
 </main>

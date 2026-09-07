@@ -7,9 +7,9 @@
     "note": "Only active, role-verified production endpoints are displayed. Implementation addresses are intentionally omitted until independently re-verified."
   },
   "teeVerification": {
-    "available": true,
+    "available": false,
     "url": "https://docs.layrs.xyz/verify",
-    "label": "Verify owner-shared TEE receipt"
+    "label": "Verify anchored TEE receipt"
   },
   "chains": [
     {
@@ -61,7 +61,7 @@
       "chain": "horizen",
       "address": "0x3f1d32cd64ab362a7b4390e63229b2a7b8ec6a96",
       "role": "Private TEE receipt publication registry",
-      "status": "Per-event owner-shareable TEE receipts are independently verifiable; this registry remains available for optional Horizen batch anchoring.",
+      "status": "Reviewer attestations are verifiable only after confirmed Horizen batch anchoring; owner actions require an owner-issued capability and allowlisted system events require only the receipt ID.",
       "enabled": false,
       "sourceVerified": false
     },

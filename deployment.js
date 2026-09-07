@@ -311,8 +311,8 @@
     const proofSection = element("section", "registry-chain proof-registry");
     const proofHead = element("div", "registry-chain-head");
     proofHead.append(
-      element("h2", "", "Privacy proofs"),
-      element("span", "registry-chain-id", "RISC Zero · zkVerify · Horizen"),
+      element("h2", "", "Evidence registries"),
+      element("span", "registry-chain-id", "TEE receipts · deployed ZK registry · Horizen"),
     );
     const repository = element("a", "registry-explorer", "public evidence ↗");
     repository.href = "https://github.com/layrsHQ/privacy-evidence";
@@ -334,10 +334,7 @@
           privacy: "Registry publication is separate from confidential execution and does not reveal the private order book.",
         },
         tags: [
-          { label: proof.enabled ? "Chain publication enabled" : "On-chain batching idle", className: proof.enabled ? "active" : "" },
-          ...(proof.name === "LayrsTeeReceiptRegistry" && registry.teeVerification?.available === true
-            ? [{ label: "TEE verification live", className: "active" }]
-            : []),
+          { label: proof.enabled ? "Anchored receipt verification live" : "Receipt verification not live", className: proof.enabled ? "active" : "" },
           ...(proof.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
         ],
         addresses: [
