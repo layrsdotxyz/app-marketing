@@ -124,8 +124,9 @@ test("publishes extensionless evidence routes through the normal release path", 
   assert.match(publishScript, /'\/demo'/);
   assert.match(publishScript, /'\/adoption'/);
   assert.match(publishScript, /'\/adoption\.js'/);
-  assert.match(packageScript, /adoption\.\$\{adoptionScriptHash\}\.js/);
-  assert.match(packageScript, /replace\('src="\/adoption\.js"'/);
+  assert.match(packageScript, /\["adoption\.html", "adoption\.js"\]/);
+  assert.match(packageScript, /\["deployment\.html", "deployment\.js"\]/);
+  assert.match(packageScript, /page\.replace\(sourceReference, `src="\/\$\{versionedName\}"`\)/);
   assert.match(packageScript, /\["styles\.css", "site\.js"\]/);
   assert.match(packageScript, /versionedName/);
   assert.doesNotMatch(publishScript, /current\/"[\s\S]{0,120}--delete/);
