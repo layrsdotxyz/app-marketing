@@ -85,7 +85,7 @@ requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adop
 requireText(adoption, "Protocol activity", "adoption activity summary");
 requireText(adoption, "Activity per private commitment", "privacy-preserving adoption cohorts");
 requireText(adoption, "SQL used by this report", "adoption query disclosure");
-requireText(adoption, "https://dune.com/queries/8636465", "independent Dune evidence");
+requireText(adoption, "https://dune.layrs.xyz", "branded independent Dune evidence");
 requireText(adoptionScript, "api.layrs.xyz/v1/milestone/adoption", "aggregate adoption API");
 requireText(adoptionScript, "uniquePrivateUserCommitments", "private commitment metric");
 requireText(demo, 'rel="canonical" href="https://layrs.xyz/demo"', "demo canonical URL");

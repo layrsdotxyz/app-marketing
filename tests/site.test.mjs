@@ -150,7 +150,8 @@ test("publishes privacy-preserving adoption evidence and a captioned demo", () =
   assert.match(adoption, /Protocol activity/);
   assert.match(adoption, /Activity per private commitment/);
   assert.match(adoption, /SQL used by this report/);
-  assert.match(adoption, /dune\.com\/queries\/8636465/);
+  assert.match(adoption, /https:\/\/dune\.layrs\.xyz/);
+  assert.doesNotMatch(adoption, /https:\/\/dune\.com\/queries\//);
   assert.doesNotMatch(adoption, /TaskOn reconciliation/);
   assert.match(adoption, /Download JSON/);
   assert.match(adoption, /no address output/);
