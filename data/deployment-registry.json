@@ -56,7 +56,7 @@
       "chain": "horizen",
       "address": "0x3f1d32cd64ab362a7b4390e63229b2a7b8ec6a96",
       "role": "Private TEE receipt publication registry",
-      "status": "Deployed; receipt publication is disabled in production and no receipt batches are currently published.",
+      "status": "3,853 historical receipt batches were published through 2026-08-23; zero were published in the Sep 4-7 quest window; production publication is currently disabled.",
       "enabled": false,
       "sourceVerified": false
     },
@@ -65,7 +65,7 @@
       "chain": "horizen",
       "address": "0xa43c9694a417ca3109813846dea4e984ee9c25a1",
       "role": "Private registration-attestation registry",
-      "status": "Deployed; registration publication awaits enabled TEE receipt-batch publication.",
+      "status": "202 historical registration batches were published through 2026-08-22; zero were published in the Sep 4-7 quest window; production publication is currently disabled.",
       "enabled": false,
       "sourceVerified": false
     },
@@ -74,7 +74,7 @@
       "chain": "horizen",
       "address": "0x6e208c57786f9ff21ab2a582cbff69d184d9e9c1",
       "role": "Additive settlement-proof registry",
-      "status": "Deployed and source-verified; the production proof worker schedule is disabled, so no current production ZK attestations exist.",
+      "status": "Deployed and source-verified; 12 historical attestSettlement transactions were published through 2026-07-31, zero in the Sep 4-7 quest window, and the production proof schedule is currently disabled.",
       "enabled": false,
       "sourceVerified": true
     }
