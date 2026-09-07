@@ -193,6 +193,18 @@
     }
     cardNode.appendChild(addresses);
 
+    if (registry.teeVerification?.available === true) {
+      const tee = element("div", "contract-tee-evidence");
+      tee.appendChild(element("span", "contract-tee-label", "TEE evidence"));
+      const verify = element("a", "contract-tee-link", registry.teeVerification.label);
+      verify.href = registry.teeVerification.url;
+      verify.target = "_blank";
+      verify.rel = "noopener noreferrer";
+      verify.referrerPolicy = "no-referrer";
+      tee.appendChild(verify);
+      cardNode.appendChild(tee);
+    }
+
     if (config.asset) {
       const asset = element("div", "contract-asset");
       asset.appendChild(element("span", "contract-asset-label", `Asset ${config.asset.symbol}`));
@@ -322,7 +334,10 @@
           privacy: "Registry publication is separate from confidential execution and does not reveal the private order book.",
         },
         tags: [
-          { label: proof.enabled ? "Enabled" : "Disabled", className: proof.enabled ? "active" : "" },
+          { label: proof.enabled ? "Chain publication enabled" : "On-chain batching idle", className: proof.enabled ? "active" : "" },
+          ...(proof.name === "LayrsTeeReceiptRegistry" && registry.teeVerification?.available === true
+            ? [{ label: "TEE verification live", className: "active" }]
+            : []),
           ...(proof.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
         ],
         addresses: [

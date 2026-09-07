@@ -6,6 +6,11 @@
     "source": "layrsv2.protocol_deployments",
     "note": "Only active, role-verified production endpoints are displayed. Implementation addresses are intentionally omitted until independently re-verified."
   },
+  "teeVerification": {
+    "available": true,
+    "url": "https://docs.layrs.xyz/verify",
+    "label": "Verify owner-shared TEE receipt"
+  },
   "chains": [
     {
       "key": "horizen",
@@ -56,7 +61,7 @@
       "chain": "horizen",
       "address": "0x3f1d32cd64ab362a7b4390e63229b2a7b8ec6a96",
       "role": "Private TEE receipt publication registry",
-      "status": "Deployed; receipt publication is disabled in production and no receipt batches are currently published.",
+      "status": "Per-event owner-shareable TEE receipts are independently verifiable; this registry remains available for optional Horizen batch anchoring.",
       "enabled": false,
       "sourceVerified": false
     },

@@ -123,6 +123,19 @@
   font-family:var(--data);font-size:12px;
 }
 .contract-asset a:hover{border-color:var(--yellow-deep);color:var(--ink);}
+.contract-tee-evidence{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;
+  border-left:3px solid var(--yellow);background:color-mix(in srgb,var(--yellow) 7%,var(--paper));
+}
+.contract-tee-label{
+  color:var(--ink-faint);font-family:var(--data);font-size:9px;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+.contract-tee-link{
+  border-bottom:1px dotted var(--ink-faint);color:var(--ink);
+  font-family:var(--data);font-size:11px;
+}
+.contract-tee-link:hover{border-color:var(--yellow-deep);}
 .proof-evidence{
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;
   border:1px solid var(--rule);background:var(--rule);

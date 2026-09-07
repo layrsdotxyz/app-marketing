@@ -103,6 +103,11 @@ test("publishes an active-production Horizen-first deployment registry", () => {
   assert.equal(registry.chains[0].core.adminOracle.proxy, "0x0237dfce14d1d66ca58948a6273e400cb3f00976");
   assert.equal(registry.chains[1].core.matchSettlement.proxy, "0xbc07a1b88b403db43a79809c615cdb26f20f12a8");
   assert.equal(registry.chains[1].core.adminOracle.proxy, "0xf5835af406473dc5a100605ea162781e9daf5abc");
+  assert.deepEqual(registry.teeVerification, {
+    available: true,
+    url: "https://docs.layrs.xyz/verify",
+    label: "Verify owner-shared TEE receipt",
+  });
   assert.match(deployment, /Every address,[\s\S]*verifiable[\s\S]*on-chain/);
   assert.match(deployment, /name="base:app_id" content="6a600856078f6baf9ef300da"/);
 });
@@ -114,6 +119,8 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /github\.com\/layrsHQ\/privacy-evidence/);
   assert.match(deploymentScript, /Runtime status/);
   assert.match(deploymentScript, /Publication status is independent/);
+  assert.match(deploymentScript, /TEE verification live/);
+  assert.match(deploymentScript, /contract-tee-evidence/);
 });
 
 test("publishes extensionless evidence routes through the normal release path", () => {
@@ -151,6 +158,8 @@ test("publishes privacy-preserving adoption evidence and a captioned demo", () =
   assert.match(adoption, /Activity per private commitment/);
   assert.match(adoption, /SQL used by this report/);
   assert.match(adoption, /dune\.com\/queries\/8146290/);
+  assert.match(adoption, /TEE verification/);
+  assert.match(adoption, /docs\.layrs\.xyz\/verify/);
   assert.doesNotMatch(adoption, /TaskOn reconciliation/);
   assert.match(adoption, /Download JSON/);
   assert.match(adoption, /no address output/);
