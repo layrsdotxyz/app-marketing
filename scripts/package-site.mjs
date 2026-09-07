@@ -38,17 +38,29 @@ for (const file of publicFiles) {
   await cp(path.join(root, file), path.join(output, file));
 }
 
-const adoptionScript = await readFile(path.join(root, "adoption.js"));
-const adoptionScriptHash = createHash("sha256").update(adoptionScript).digest("hex").slice(0, 16);
-const adoptionScriptName = `adoption.${adoptionScriptHash}.js`;
-await writeFile(path.join(output, adoptionScriptName), adoptionScript);
-const adoptionPage = await readFile(path.join(output, "adoption.html"), "utf8");
-if (!adoptionPage.includes('src="/adoption.js"')) {
-  throw new Error("adoption page is missing its unversioned source script");
-}
-await writeFile(
-  path.join(output, "adoption.html"),
-  adoptionPage.replace('src="/adoption.js"', `src="/${adoptionScriptName}"`),
+const versionedPageScripts = await Promise.all(
+  [
+    ["adoption.html", "adoption.js"],
+    ["deployment.html", "deployment.js"],
+  ].map(async ([pageName, scriptName]) => {
+    const script = await readFile(path.join(root, scriptName));
+    const scriptHash = createHash("sha256").update(script).digest("hex").slice(0, 16);
+    const extension = path.extname(scriptName);
+    const versionedName = `${path.basename(scriptName, extension)}.${scriptHash}${extension}`;
+    await writeFile(path.join(output, versionedName), script);
+
+    const pagePath = path.join(output, pageName);
+    const page = await readFile(pagePath, "utf8");
+    const sourceReference = `src="/${scriptName}"`;
+    if (!page.includes(sourceReference)) {
+      throw new Error(`${pageName} is missing its unversioned source script ${scriptName}`);
+    }
+    await writeFile(
+      pagePath,
+      page.replace(sourceReference, `src="/${versionedName}"`),
+    );
+    return versionedName;
+  }),
 );
 
 // The mutable /current release is updated before CloudFront invalidation has
@@ -84,5 +96,5 @@ for (const dir of publicDirs) {
 }
 
 process.stdout.write(
-  `Packaged ${publicFiles.length} files, ${adoptionScriptName}, ${sharedAssets.map(([, name]) => name).join(", ")} and ${publicDirs.length} directories into ${output}\n`,
+  `Packaged ${publicFiles.length} files, ${versionedPageScripts.join(", ")}, ${sharedAssets.map(([, name]) => name).join(", ")} and ${publicDirs.length} directories into ${output}\n`,
 );
