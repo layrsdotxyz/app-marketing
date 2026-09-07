@@ -152,7 +152,16 @@ test("publishes privacy-preserving adoption evidence and a captioned demo", () =
   assert.match(adoption, /SQL used by this report/);
   assert.match(adoption, /https:\/\/dune\.layrs\.xyz/);
   assert.doesNotMatch(adoption, /https:\/\/dune\.com\/queries\//);
-  assert.doesNotMatch(adoption, /TaskOn reconciliation/);
+  assert.match(adoption, /not human-verified users/);
+  assert.match(adoption, /3,853 historical batches through 23 August 2026/);
+  assert.match(adoption, /202 historical batches through 22 August 2026/);
+  assert.match(adoption, /12 historical attestations through 31 July 2026/);
+  assert.match(adoption, /https:\/\/docs\.layrs\.xyz\/verify/);
+  assert.match(adoptionScript, /not human-verified users, wallets, or user-signed chain interactions/);
+  assert.doesNotMatch(adoptionScript, /methodology\.filter/);
+  assert.match(registry.proofs[0].status, /3,853 historical receipt batches/);
+  assert.match(registry.proofs[1].status, /202 historical registration batches/);
+  assert.match(registry.proofs[2].status, /12 historical attestSettlement transactions/);
   assert.match(adoption, /Download JSON/);
   assert.match(adoption, /no address output/);
   assert.equal(legacyAdoption.length, 2932);

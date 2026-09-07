@@ -217,14 +217,14 @@ const unifiedActivityRows = (report, historicalSnapshots) => {
 };
 
 const reportForDownload = (report) => {
-  const { qualification: _qualification, methodology = [], epochs: _epochs, lifetime, ...rest } = report;
+  const { methodology = [], lifetime, ...rest } = report;
   return {
     ...rest,
     lifetime: {
       uniquePrivateUserCommitments: lifetime?.uniquePrivateUserCommitments?.exactCombined ?? null,
       additive: lifetime?.additive ?? {},
     },
-    methodology: methodology.filter((line) => !/TaskOn|Guardian-qualified/i.test(line)),
+    methodology,
     sourceClassification: {
       primary: "Internal PostgreSQL reporting read model",
       chainEvidence: "Confirmed settlement artifacts and indexed Base/Horizen contract events",
@@ -271,8 +271,8 @@ const render = (report, legacySnapshot) => {
     ? lifetimeUnique.exactCombined.toLocaleString("en-US")
     : firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US");
   const summaryRows = [
-    ["Lifetime unique private commitments", uniqueLabel, "Production lifetime", "Exact deduplicated union of opaque commitments; no wallet or user address disclosed"],
-    ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Production lifetime", "Metric-specific lifetime total; financial state is not part of this report"],
+    ["Lifetime unique private commitments", uniqueLabel, "Production lifetime", "Exact union of opaque protocol commitments; not human-verified users, wallets, or user-signed chain interactions"],
+    ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Production lifetime", "Backend and TEE activity count; not on-chain transactions or unique humans"],
     ["Lifetime enclave-signed private commands", (lifetime?.privateReceiptActivityCount ?? firstNumber(report, ["summary.privateReceiptActivityCount"])).toLocaleString("en-US"), "TEE receipt evidence", "User-owned private-command receipts"],
     ["Active private sessions", firstNumber(report, ["summary.activePrivateSessions"]).toLocaleString("en-US"), "Internal DB", "Unrevoked, unexpired attested sessions"],
     ["Lifetime private sessions", (lifetime?.totalPrivateSessions ?? firstNumber(report, ["summary.totalPrivateSessions"])).toLocaleString("en-US"), "Production lifetime", "Attested session starts"],
