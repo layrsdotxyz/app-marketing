@@ -40,9 +40,6 @@ const loadHistoricalAdoption = async (report) => {
     fetchBytes(LEGACY_ADOPTION_CAPTURE.capturePath),
     fetchBytes(LEGACY_ADOPTION_CAPTURE.manifestPath),
   ]);
-  // The immutable capture is minified JSON without a trailing newline. The
-  // static-site package stores text assets with one packaging newline; bind
-  // provenance to the original bytes and reject every other transformation.
   const packagedCapture = new Uint8Array(captureBytes);
   if (packagedCapture.length !== 2932 || packagedCapture.at(-1) !== 0x0a) {
     throw new Error("historical adoption capture packaging mismatch");
@@ -74,6 +71,25 @@ const loadHistoricalAdoption = async (report) => {
 };
 
 const REPORT_QUERIES = [
+  {
+    title: "Current direct-execution epoch adoption",
+    source: "Direct-runtime PostgreSQL projection",
+    sql: `SELECT
+  count(*) AS identities,
+  count(DISTINCT auth_subject_hash) AS authenticated_users,
+  count(*) FILTER (WHERE admitted_post_genesis) AS post_genesis_admissions
+FROM layrsv2.direct_execution_identities
+WHERE epoch_id = :sealed_opening_epoch;
+
+SELECT
+  count(*) FILTER (WHERE liability > 0) AS funded_identities,
+  sum(liability) AS projected_liability_atomic
+FROM direct_execution_per_identity_liability;
+
+SELECT count(*) AS verified_wallet_mappings
+FROM layrsv2.direct_execution_privy_wallets
+WHERE epoch_id = :sealed_opening_epoch;`,
+  },
   {
     title: "Private identities and protocol usage",
     source: "Internal DB",
@@ -174,57 +190,19 @@ const historicalAdoptionSnapshots = (report, legacySnapshot) => legacySnapshot ?
   snapshot: legacySnapshot,
 }] : [];
 
-const unifiedActivityRows = (report, historicalSnapshots) => {
-  const values = new Map();
-  const add = (key, initial, item) => {
-    const current = values.get(key) ?? initial;
-    current.count += Number(item.count ?? 0);
-    if (item.amountAtomic !== undefined) current.amountAtomic += BigInt(item.amountAtomic);
-    if (item.sourceAmountAtomic !== undefined) current.amountAtomic += BigInt(item.sourceAmountAtomic);
-    if (item.quantityAtomic !== undefined) current.quantityAtomic += BigInt(item.quantityAtomic);
-    if (item.markets !== undefined && Number(item.count) > 0) current.marketCounts.push(Number(item.markets));
-    values.set(key, current);
-  };
-  const ingest = (source) => {
-    (source.funding?.deposits ?? []).forEach((item) => add(`deposit:${item.chain}:${item.asset}`,
-      { kind: "deposit", chain: item.chain, asset: item.asset, count: 0, amountAtomic: 0n }, item));
-    (source.funding?.withdrawals ?? []).forEach((item) => add(`withdrawal:${item.chain}:${item.asset}`,
-      { kind: "withdrawal", chain: item.chain, asset: item.asset, count: 0, amountAtomic: 0n }, item));
-    (source.funding?.bridges ?? []).forEach((item) => add(`bridge:${item.direction}:${item.status}`,
-      { kind: "bridge", direction: item.direction, status: item.status, count: 0, amountAtomic: 0n }, item));
-    (source.trading?.fills ?? []).forEach((item) => add(`private fill:${item.chain}`,
-      { kind: "private fill", chain: item.chain, count: 0, quantityAtomic: 0n, marketCounts: [] }, item));
-    (source.vaults?.events ?? []).forEach((item) => add(`vault:${item.chain}:${item.event}`,
-      { kind: `vault ${item.event.toLowerCase()}`, chain: item.chain, count: 0 }, item));
-  };
-  historicalSnapshots.forEach(({ snapshot }) => ingest(snapshot));
-  ingest(report);
-  return [...values.values()].map((item) => {
-    if (item.kind === "deposit" || item.kind === "withdrawal") return [
-      item.kind, item.chain, item.asset, item.count, formatAtomic(item.amountAtomic.toString(), item.asset), "Verified production evidence",
-    ];
-    if (item.kind === "bridge") return [
-      item.kind, item.direction.replaceAll("_", " → "), item.status, item.count,
-      formatAtomic(item.amountAtomic.toString(), "ZEN"), "Verified production evidence",
-    ];
-    if (item.kind === "private fill") {
-      const markets = item.marketCounts.length === 1 ? `${item.marketCounts[0]} markets` : "Verified markets";
-      return [item.kind, item.chain, markets, item.count,
-        `${(Number(item.quantityAtomic) / 1_000_000).toLocaleString("en-US")} contracts`, "Verified production evidence"];
-    }
-    return [item.kind, item.chain, "LPVault", item.count, "—", "Verified production evidence"];
-  });
-};
+const adoptionActivityRows = (source, label, evidence) => [
+  ...(source.funding?.deposits ?? []).map((item) => [`${label} deposit`, item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), evidence]),
+  ...(source.funding?.withdrawals ?? []).map((item) => [`${label} withdrawal`, item.chain, item.asset, item.count, formatAtomic(item.amountAtomic, item.asset), evidence]),
+  ...(source.funding?.bridges ?? []).map((item) => [`${label} bridge`, item.direction.replaceAll("_", " → "), item.status, item.count, formatAtomic(item.sourceAmountAtomic, "ZEN"), evidence]),
+  ...(source.trading?.fills ?? []).map((item) => [`${label} private fill`, item.chain, `${item.markets} market${item.markets === 1 ? "" : "s"}`, item.count, `${(Number(item.quantityAtomic) / 1_000_000).toLocaleString("en-US")} contracts`, evidence]),
+  ...(source.vaults?.events ?? []).map((item) => [`${label} vault ${item.event.toLowerCase()}`, item.chain, "LPVault", item.count, "—", evidence]),
+];
 
 const reportForDownload = (report) => {
-  const { methodology = [], lifetime, ...rest } = report;
+  const { qualification: _qualification, methodology = [], ...rest } = report;
   return {
     ...rest,
-    lifetime: {
-      uniquePrivateUserCommitments: lifetime?.uniquePrivateUserCommitments?.exactCombined ?? null,
-      additive: lifetime?.additive ?? {},
-    },
-    methodology,
+    methodology: methodology.filter((line) => !/TaskOn|Guardian-qualified/i.test(line)),
     sourceClassification: {
       primary: "Internal PostgreSQL reporting read model",
       chainEvidence: "Confirmed settlement artifacts and indexed Base/Horizen contract events",
@@ -242,12 +220,29 @@ const toCsv = (report, legacySnapshot) => {
   rows.push(["summary", "", "private_receipts", "activity_count", report.summary.privateReceiptActivityCount]);
   if (report.lifetime) {
     const unique = report.lifetime.uniquePrivateUserCommitments;
-    rows.push(["lifetime", "", "private_commitments", "unique", unique.exactCombined]);
+    rows.push(["lifetime", "", "private_commitments", "deduplicated_minimum", unique.deduplicatedMinimum]);
+    rows.push(["lifetime", "", "private_commitments", "undeduplicated_maximum", unique.undeduplicatedMaximum]);
     Object.entries(report.lifetime.additive).forEach(([metric, value]) => rows.push(["lifetime", "", "additive", metric, value]));
   }
+  if (report.directExecution) {
+    Object.entries(report.directExecution).forEach(([metric, value]) => {
+      if (metric !== "epochId") rows.push(["direct_epoch", "", report.directExecution.epochId, metric, value]);
+    });
+  }
+  historicalAdoptionSnapshots(report, legacySnapshot).forEach(({ epochId, snapshot }) => {
+    snapshot.identityActivityBuckets.forEach((item) => rows.push(["historical_identity_activity", epochId, item.bucket, "commitments", item.commitments]));
+    snapshot.funding.deposits.forEach((item) => rows.push(["historical_deposit", item.chain, item.asset, "count", item.count], ["historical_deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+    snapshot.funding.withdrawals.forEach((item) => rows.push(["historical_withdrawal", item.chain, item.asset, "count", item.count], ["historical_withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+    snapshot.funding.bridges.forEach((item) => rows.push(["historical_bridge", item.direction, item.status, "count", item.count], ["historical_bridge", item.direction, item.status, "source_amount_atomic", item.sourceAmountAtomic]));
+    snapshot.trading.fills.forEach((item) => rows.push(["historical_trade", item.chain, "confirmed_fills", "count", item.count]));
+    snapshot.vaults.events.forEach((item) => rows.push(["historical_vault", item.chain, item.event, "count", item.count]));
+  });
   report.identityActivityBuckets.forEach((item) => rows.push(["identity_activity", "", item.bucket, "commitments", item.commitments]));
-  unifiedActivityRows(report, historicalAdoptionSnapshots(report, legacySnapshot)).forEach((item) =>
-    rows.push(["activity", item[1], item[2], item[0], item[3]], ["activity", item[1], item[2], `${item[0]}_value`, item[4]]));
+  report.funding.deposits.forEach((item) => rows.push(["deposit", item.chain, item.asset, "count", item.count], ["deposit", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+  report.funding.withdrawals.forEach((item) => rows.push(["withdrawal", item.chain, item.asset, "count", item.count], ["withdrawal", item.chain, item.asset, "amount_atomic", item.amountAtomic]));
+  report.funding.bridges.forEach((item) => rows.push(["bridge", item.direction, item.status, "count", item.count], ["bridge", item.direction, item.status, "source_amount_atomic", item.sourceAmountAtomic]));
+  report.trading.fills.forEach((item) => rows.push(["trade", item.chain, "confirmed_fills", "count", item.count]));
+  report.vaults.events.forEach((item) => rows.push(["vault", item.chain, item.event, "count", item.count]));
   rows.push(["report", "", "snapshot", "sha256", report.reportChecksumSha256]);
   return rows.map((values) => values.map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
 };
@@ -267,29 +262,49 @@ const enableDownload = (button, name, type, makeBody) => {
 const render = (report, legacySnapshot) => {
   const lifetimeUnique = report.lifetime?.uniquePrivateUserCommitments;
   const lifetime = report.lifetime?.additive;
-  const uniqueLabel = Number.isSafeInteger(lifetimeUnique?.exactCombined)
+  const uniqueLabel = lifetimeUnique
     ? lifetimeUnique.exactCombined.toLocaleString("en-US")
     : firstNumber(report, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US");
   const summaryRows = [
-    ["Lifetime unique private commitments", uniqueLabel, "Production lifetime", "Exact union of opaque protocol commitments; not human-verified users, wallets, or user-signed chain interactions"],
-    ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Production lifetime", "Backend and TEE activity count; not on-chain transactions or unique humans"],
-    ["Lifetime enclave-signed private commands", (lifetime?.privateReceiptActivityCount ?? firstNumber(report, ["summary.privateReceiptActivityCount"])).toLocaleString("en-US"), "TEE receipt evidence", "User-owned private-command receipts"],
+    ["Current direct identities", firstNumber(report, ["directExecution.identities"]).toLocaleString("en-US"), "Sealed epoch projection", "All identity commitments imported or admitted into the current direct epoch"],
+    ["Current authenticated users", firstNumber(report, ["directExecution.authSubjects"]).toLocaleString("en-US"), "Sealed epoch projection", "Distinct canonical authentication subjects; no subject or wallet values are disclosed"],
+    ["Current funded identities", firstNumber(report, ["directExecution.fundedIdentities"]).toLocaleString("en-US"), "Signed balance projection", "Identities whose projected aggregate liability is greater than zero"],
+    ["Verified embedded-wallet mappings", firstNumber(report, ["directExecution.walletMappings"]).toLocaleString("en-US"), "Privy binding projection", "Count only; wallet addresses and identity mappings are withheld"],
+    ["Post-genesis identity admissions", firstNumber(report, ["directExecution.postGenesisAdmissions"]).toLocaleString("en-US"), "Signed admission receipts", "Zero-balance identities admitted after the sealed opening epoch"],
+    ["Current projected USDC liability", formatAtomic(report.directExecution?.projectedLiabilityAtomic, "USDC"), "Signed balance projection", "Reporting projection only; encrypted enclave state remains authoritative"],
+    ["Direct receipts / orders / trades", `${firstNumber(report, ["directExecution.receipts"]).toLocaleString("en-US")} / ${firstNumber(report, ["directExecution.orders"]).toLocaleString("en-US")} / ${firstNumber(report, ["directExecution.trades"]).toLocaleString("en-US")}`, "Direct execution projection", "Exactly-once terminal receipts and native CLOB events in the current epoch"],
+    ["Pre-recovery unique private commitments", firstNumber(legacySnapshot, ["summary.uniquePrivateUserCommitments"]).toLocaleString("en-US"), "Signed pre-recovery capture", "Closed historical epoch; opaque commitments only"],
+    ["Pre-recovery private sessions", firstNumber(legacySnapshot, ["summary.totalPrivateSessions"]).toLocaleString("en-US"), "Signed pre-recovery capture", `${firstNumber(legacySnapshot, ["summary.activePrivateSessions"]).toLocaleString("en-US")} were active at capture time`],
+    ["Pre-recovery privacy-feature interactions", firstNumber(legacySnapshot, ["summary.privacyFeatureUsageCount"]).toLocaleString("en-US"), "Signed pre-recovery capture", "Historical protocol-activity metric; not a current balance"],
+    ["Pre-recovery enclave-signed commands", firstNumber(legacySnapshot, ["summary.privateReceiptActivityCount"]).toLocaleString("en-US"), "Signed pre-recovery capture", "Historical TEE receipt evidence"],
+    ["Pre-recovery fills / resolutions", `${firstNumber(legacySnapshot, ["trading.confirmedAuditFills"]).toLocaleString("en-US")} / ${firstNumber(legacySnapshot, ["trading.confirmedResolutionTransactions"]).toLocaleString("en-US")}`, "Signed pre-recovery capture", "Confirmed historical settlement evidence"],
+    ["Lifetime unique private commitments", uniqueLabel, "Exact legacy + current union", lifetimeUnique ? "Exact privacy-safe union of opaque commitments; no wallet or address is disclosed" : "Distinct opaque commitments across session and funding records"],
+    ["Lifetime privacy-feature interactions", (lifetime?.privacyFeatureUsageCount ?? firstNumber(report, ["summary.privacyFeatureUsageCount"])).toLocaleString("en-US"), "Legacy + fresh epochs", "Metric-specific additive total; financial ledgers remain separate"],
+    ["Lifetime enclave-signed private commands", (lifetime?.privateReceiptActivityCount ?? firstNumber(report, ["summary.privateReceiptActivityCount"])).toLocaleString("en-US"), "TEE receipt evidence", "User-owned receipts across closed legacy and fresh epochs"],
     ["Active private sessions", firstNumber(report, ["summary.activePrivateSessions"]).toLocaleString("en-US"), "Internal DB", "Unrevoked, unexpired attested sessions"],
-    ["Lifetime private sessions", (lifetime?.totalPrivateSessions ?? firstNumber(report, ["summary.totalPrivateSessions"])).toLocaleString("en-US"), "Production lifetime", "Attested session starts"],
-    ["Lifetime confirmed private fills", (lifetime?.confirmedAuditFills ?? firstNumber(report, ["trading.confirmedAuditFills"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed audit fills"],
-    ["Lifetime confirmed resolutions", (lifetime?.confirmedResolutionTransactions ?? firstNumber(report, ["trading.confirmedResolutionTransactions"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed market-resolution transactions"],
+    ["Lifetime private sessions", (lifetime?.totalPrivateSessions ?? firstNumber(report, ["summary.totalPrivateSessions"])).toLocaleString("en-US"), "Legacy + fresh epochs", "Metric-specific additive total of attested session starts"],
+    ["Lifetime confirmed private fills", (lifetime?.confirmedAuditFills ?? firstNumber(report, ["trading.confirmedAuditFills"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed audit fills across epochs"],
+    ["Lifetime confirmed resolutions", (lifetime?.confirmedResolutionTransactions ?? firstNumber(report, ["trading.confirmedResolutionTransactions"])).toLocaleString("en-US"), "Horizen evidence", "Confirmed market-resolution transactions across epochs"],
   ];
   summary.replaceChildren(...summaryRows.map((values) => row(values.map((value, index) => [value, index === 1 ? "adoption-value" : ""]))));
 
   const historicalSnapshots = historicalAdoptionSnapshots(report, legacySnapshot);
-  const activityRows = unifiedActivityRows(report, historicalSnapshots);
+  const activityRows = [
+    ["Direct deposit credits", "Base", "USDC", firstNumber(report, ["directExecution.depositCredits"]), "—", "Final custody-bound direct receipts"],
+    ["Direct settled withdrawals", "Base", "USDC", firstNumber(report, ["directExecution.withdrawalsSettled"]), "—", "Final custody-bound direct receipts"],
+    ...historicalSnapshots.flatMap(({ snapshot }) => adoptionActivityRows(snapshot, "Legacy", "Signed immutable legacy DB capture")),
+    ...adoptionActivityRows(report, "Current", "Current production projection"),
+  ];
   activity.replaceChildren(...activityRows.map((values) => row(values.map((value, index) => [value, index === 3 ? "adoption-value" : ""]))));
 
-  const bucketRows = report.identityActivityBuckets;
+  const bucketRows = [
+    ...historicalSnapshots.flatMap(({ snapshot }) => snapshot.identityActivityBuckets.map((item) => ({ ...item, epoch: "Legacy" }))),
+    ...report.identityActivityBuckets.map((item) => ({ ...item, epoch: "Current" })),
+  ];
   buckets.replaceChildren(...bucketRows.map((item) => row([
-    [`${item.bucket} interactions`, ""],
+    [`${item.bucket} interactions · ${item.epoch.toLowerCase()} epoch`, ""],
     [item.commitments.toLocaleString("en-US"), "adoption-value"],
-    ["Lifetime aggregate; commitment values withheld", ""],
+    [`${item.epoch} aggregate only; commitment values withheld`, ""],
   ])));
 
   queries.replaceChildren(...REPORT_QUERIES.map((definition) => {
@@ -318,7 +333,7 @@ const render = (report, legacySnapshot) => {
 
   const downloadable = reportForDownload(report);
   enableDownload(downloadJson, "layrs-adoption.json", "application/json", () => `${JSON.stringify(downloadable, null, 2)}\n`);
-  enableDownload(downloadCsv, "layrs-adoption.csv", "text/csv;charset=utf-8", () => `${toCsv(report, legacySnapshot)}\n`);
+  enableDownload(downloadCsv, "layrs-adoption.csv", "text/csv;charset=utf-8", () => `${toCsv(downloadable, legacySnapshot)}\n`);
 };
 
 const loadReport = () => fetch(`https://api.layrs.xyz/v1/milestone/adoption?at=${Date.now()}`, {

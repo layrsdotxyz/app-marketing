@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="adoption-provenance">
-      <p><b>Primary source</b><span>Internal PostgreSQL reporting read model</span></p>
+      <p><b>Primary source</b><span>Signed direct-runtime projection plus retained legacy reporting evidence</span></p>
       <p><b>Chain evidence</b><span>Confirmed Horizen settlement artifacts and indexed Base/Horizen contract events</span></p>
       <p><b>Refresh policy</b><span>Internal snapshot refreshes every 3 hours; public Dune history is backfilled from 1 July 2026 and refreshed manually</span></p>
     </div>
@@ -91,7 +91,7 @@
       <div><p class="eyebrow">Reproducibility</p><h2>SQL used by this report</h2></div>
       <p class="evidence-timestamp">Read-only aggregate queries · no address output</p>
     </div>
-    <p class="adoption-query-note">These are the production report queries. Chain-backed rows are read from tables populated by confirmed settlement publishers and chain indexers; the dashboard does not query an RPC endpoint in the browser.</p>
+    <p class="adoption-query-note">These are the production report queries. Current-epoch financial values are projections of signed direct-runtime receipts; the encrypted enclave state remains authoritative. Chain-backed rows are populated only from confirmed settlement evidence. No wallet address or identity mapping is returned to the browser.</p>
     <div id="adoption-queries" class="adoption-queries"></div>
 
     <div class="adoption-checksum">
