@@ -14,8 +14,8 @@ const [html, css, siteScript, deployment, deploymentScript, adoption, adoptionSc
   readFile(path.join(root, "deployment.js"), "utf8"),
   readFile(path.join(root, "adoption.html"), "utf8"),
   readFile(path.join(root, "adoption.js"), "utf8"),
-  readFile(path.join(root, "legacy-adoption-3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7.json")),
-  readFile(path.join(root, "legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1.json")),
+  readFile(path.join(root, "adoption-evidence-3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7.json")),
+  readFile(path.join(root, "adoption-evidence-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1.json")),
   readFile(path.join(root, "demo.html"), "utf8"),
   readFile(path.join(root, "deployment", "publish-static-release.sh"), "utf8"),
   readFile(path.join(root, "deployment", "gitlab-rollback-static.sh"), "utf8"),
@@ -170,13 +170,16 @@ test("publishes privacy-preserving adoption evidence and a captioned demo", () =
   assert.equal(legacyAdoption.at(-1), 0x0a);
   assert.equal(createHash("sha256").update(legacyAdoption.subarray(0, -1)).digest("hex"), "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7");
   assert.equal(createHash("sha256").update(legacyAdoptionManifest).digest("hex"), "364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1");
-  assert.match(adoptionScript, /legacy-adoption-3fb3d9ac/);
+  assert.match(adoptionScript, /adoption-evidence-3fb3d9ac/);
   assert.match(adoptionScript, /lifetimeUnique\.exactCombined\.toLocaleString/);
-  assert.match(adoptionScript, /Pre-recovery privacy-feature interactions/);
-  assert.match(adoptionScript, /Pre-recovery fills \/ resolutions/);
-  assert.match(adoptionScript, /Signed immutable legacy DB capture/);
+  assert.match(adoptionScript, /\["Unique private commitments"/);
+  assert.match(adoptionScript, /\["Privacy-feature interactions"/);
+  assert.match(adoptionScript, /\["Deposit", item\.chain/);
+  assert.match(adoptionScript, /\["Withdrawal", item\.chain/);
+  assert.doesNotMatch(adoptionScript, /\["(?:Pre-recovery|Legacy|Current|Consolidated)/);
+  assert.doesNotMatch(adoptionScript, /Consolidated (?:signed|settlement|indexed|evidence)/);
   assert.doesNotMatch(adoptionScript, /mock|fixture|static fallback/i);
-  assert.match(packageScript, /legacy-adoption-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1\.json/);
+  assert.match(packageScript, /adoption-evidence-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1\.json/);
   assert.match(demo, /kind="captions"/);
   assert.match(demo, /RISC Zero proof/);
   assert.match(demo, /zkVerify verification/);
