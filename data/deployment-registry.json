@@ -1,11 +1,11 @@
 {
   "schemaVersion": 2,
   "provenance": {
-    "repository": "layrsdotxyz/app-smart-contracts",
-    "sourceCommit": "6436730",
+    "repository": "layrsdotxyz/horizen-deployment",
+    "sourceCommit": "5556b24714077e9a9ea04cdb5eb9b33c25113e0a",
     "snapshotAt": "2026-10-19T21:03:03.115910+00:00",
     "source": "On-chain bytecode, EIP-1967 pointers, deployment receipts and production configuration references",
-    "note": "Horizen and Base bytecode and proxy implementations checked on-chain. Source verification is labelled only where independently confirmed from the explorer; no blanket role certification is claimed."
+    "note": "Horizen and Base bytecode and proxy implementations checked on-chain. Source verification is labelled only where independently confirmed from the explorer; no blanket role certification is claimed. The public source repository covers current Horizen production contracts; other displayed deployments were checked separately."
   },
   "chains": [
     {

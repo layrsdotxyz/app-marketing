@@ -79,7 +79,7 @@ requireText(deployment, 'id="deployment-registry-data" type="application/json"',
 requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip state");
 requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");
 requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verification link");
-requireText(deploymentScript, "github.com/layrsdotxyz/app-smart-contracts", "public privacy evidence repository");
+requireText(deploymentScript, "github.com/layrsdotxyz/horizen-deployment", "public privacy evidence repository");
 requireText(deploymentScript, "Runtime status", "truthful proof runtime status");
 requireText(deploymentScript, "Publication status is independent", "proof scope boundary");
 requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adoption canonical URL");
@@ -103,7 +103,7 @@ rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
 rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
 
 const registry = JSON.parse(registrySource);
-if (registry.schemaVersion !== 2 || registry.provenance?.repository !== "layrsdotxyz/app-smart-contracts") {
+if (registry.schemaVersion !== 2 || registry.provenance?.repository !== "layrsdotxyz/horizen-deployment") {
   failures.push("Deployment registry lacks active-production provenance");
 }
 if (registry.chains?.map((chain) => chain.key).join(",") !== "horizen,base") {

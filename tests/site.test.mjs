@@ -96,7 +96,7 @@ test("uses one canonical shared header and footer on both public pages", () => {
 });
 
 test("publishes an active-production Horizen-first deployment registry", () => {
-  assert.equal(registry.provenance.repository, "layrsdotxyz/app-smart-contracts");
+  assert.equal(registry.provenance.repository, "layrsdotxyz/horizen-deployment");
   assert.equal(registry.schemaVersion, 2);
   assert.deepEqual(registry.chains.map(({ key }) => key), ["horizen", "base"]);
   assert.equal(registry.chains[0].explorer, "https://explorer.horizen.io/address/");
@@ -113,7 +113,7 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /aria-expanded/);
   assert.match(deploymentScript, /navigator\.clipboard\.writeText/);
   assert.match(deploymentScript, /app\.layrs\.xyz\/privacy/);
-  assert.match(deploymentScript, /github\.com\/layrsdotxyz\/app-smart-contracts/);
+  assert.match(deploymentScript, /github\.com\/layrsdotxyz\/horizen-deployment/);
   assert.match(deploymentScript, /Runtime status/);
   assert.match(deploymentScript, /Publication status is independent/);
 });

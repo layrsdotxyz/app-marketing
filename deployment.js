@@ -310,7 +310,7 @@
       element("span", "registry-chain-id", "Horizen"),
     );
     const repository = element("a", "registry-explorer", "contracts and deployment records ↗");
-    repository.href = "https://github.com/layrsdotxyz/app-smart-contracts";
+    repository.href = "https://github.com/layrsdotxyz/horizen-deployment";
     repository.target = "_blank";
     repository.rel = "noopener noreferrer";
     proofHead.appendChild(repository);
@@ -369,7 +369,7 @@
   if (provenance) {
     provenance.textContent = registry.provenance.snapshotAt
       ? `Deployment records checked: ${registry.provenance.snapshotAt}. ${registry.provenance.note ?? ""}`
-      : `Generated from app-smart-contracts ${registry.provenance.sourceCommit.slice(0, 12)}.`;
+      : `Generated from horizen-deployment ${registry.provenance.sourceCommit.slice(0, 12)}.`;
   }
 
   document.addEventListener("click", () => {
