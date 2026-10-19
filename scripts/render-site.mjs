@@ -43,7 +43,18 @@ if (registry.schemaVersion !== 2 || !Array.isArray(registry.chains)
     || registry.chains.length !== 2) {
   throw new Error("invalid generated deployment registry");
 }
-const safeRegistry = JSON.stringify(registry).replaceAll("<", "\\u003c");
+// The public submission page is Horizen-only; retain other deployment records
+// in the source registry without embedding them in the public page.
+const pageRegistry = {
+  ...registry,
+  provenance: {
+    ...registry.provenance,
+    note: "Horizen bytecode and proxy implementations checked on-chain. Source verification is labelled only where independently confirmed from the explorer; no blanket role certification is claimed. Runtime labels distinguish current publication from other deployed contracts.",
+  },
+  chains: registry.chains.filter(({ key }) => key === "horizen"),
+  proofs: registry.proofs.filter(({ chain }) => chain === "horizen"),
+};
+const safeRegistry = JSON.stringify(pageRegistry).replaceAll("<", "\\u003c");
 const campaign = JSON.parse(await read("data/adoption-campaign.json"));
 const safeCampaign = JSON.stringify(campaign).replaceAll("<", "\\u003c");
 const deployment = deploymentTemplate

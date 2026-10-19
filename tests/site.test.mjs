@@ -95,7 +95,7 @@ test("uses one canonical shared header and footer on both public pages", () => {
   assert.doesNotMatch(footer, /\/attestation/);
 });
 
-test("publishes an active-production Horizen-first deployment registry", () => {
+test("publishes only Horizen contracts while preserving source deployment records", () => {
   assert.equal(registry.provenance.repository, "layrsdotxyz/horizen-deployment");
   assert.equal(registry.schemaVersion, 2);
   assert.deepEqual(registry.chains.map(({ key }) => key), ["horizen", "base"]);
@@ -106,6 +106,12 @@ test("publishes an active-production Horizen-first deployment registry", () => {
   assert.equal(registry.chains[1].core.matchSettlement.proxy, "0xbc07a1b88b403db43a79809c615cdb26f20f12a8");
   assert.equal(registry.chains[1].core.adminOracle.proxy, "0xf5835af406473dc5a100605ea162781e9daf5abc");
   assert.match(deployment, /Every address,[\s\S]*verifiable[\s\S]*on-chain/);
+  const embedded = JSON.parse(deployment.match(/<script id="deployment-registry-data" type="application\/json">([^<]+)<\/script>/)[1]);
+  assert.deepEqual(embedded.chains.map(({ key }) => key), ["horizen"]);
+  assert.ok(embedded.proofs.every(({ chain }) => chain === "horizen"));
+  assert.deepEqual(embedded.chains[0], registry.chains[0]);
+  assert.doesNotMatch(deployment, /basescan\.org|Horizen and Base|Horizen · Base/);
+  assert.match(deployment, /Network <b>Horizen Mainnet<\/b>/);
   assert.match(deployment, /name="base:app_id" content="6a600856078f6baf9ef300da"/);
 });
 
