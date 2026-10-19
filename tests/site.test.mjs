@@ -86,7 +86,9 @@ test("uses one canonical shared header and footer on both public pages", () => {
     assert.match(page, new RegExp(header.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     assert.match(page, new RegExp(footer.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
-  assert.match(footer, /docs\.layrs\.xyz\/security">Security/);
+  assert.match(footer, /docs\.layrs\.xyz\/threat-model">Security/);
+  assert.match(footer, /docs\.layrs\.xyz\/api">API reference/);
+  assert.doesNotMatch(footer, /docs\.layrs\.xyz\/(security|sdk|community|updates)"/);
   assert.match(footer, /href="\/deployment">Deployment/);
   assert.match(footer, /href="https:\/\/x\.com\/layrslab">X \/ Twitter/);
   assert.doesNotMatch(footer, /layrsprotocol/i);

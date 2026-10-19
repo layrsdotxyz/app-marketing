@@ -65,7 +65,8 @@ if ([html, deployment, adoption, demo].some((page) =>
   failures.push("All public pages must use the canonical shared footer partial");
 }
 
-requireText(footer, '<a href="https://docs.layrs.xyz/security">Security</a>', "merged Security footer link");
+requireText(footer, '<a href="https://docs.layrs.xyz/threat-model">Security</a>', "working Security footer link");
+rejectText(footer, /docs\.layrs\.xyz\/(security|sdk|community|updates)["']/, "broken historical footer links");
 requireText(footer, '<a href="/deployment">Deployment</a>', "Deployment footer link");
 requireText(footer, '<a href="https://x.com/layrslab">X / Twitter</a>', "canonical X account link");
 rejectText(footer, /layrsprotocol/i, "retired X account reference");
