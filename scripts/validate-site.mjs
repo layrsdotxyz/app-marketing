@@ -78,20 +78,21 @@ requireText(deployment, 'id="deployment-registry-data" type="application/json"',
 requireText(deploymentCss, ".know-more[data-open=\"true\"]", "mobile tooltip state");
 requireText(deploymentScript, "navigator.clipboard.writeText", "copy-to-clipboard behavior");
 requireText(deploymentScript, "app.layrs.xyz/privacy", "live enclave verification link");
-requireText(deploymentScript, "github.com/layrsHQ/privacy-evidence", "public privacy evidence repository");
+requireText(deploymentScript, "github.com/layrsdotxyz/app-smart-contracts", "public privacy evidence repository");
 requireText(deploymentScript, "Runtime status", "truthful proof runtime status");
 requireText(deploymentScript, "Publication status is independent", "proof scope boundary");
 requireText(adoption, 'rel="canonical" href="https://layrs.xyz/adoption"', "adoption canonical URL");
 requireText(adoption, "Protocol activity", "adoption activity summary");
-requireText(adoption, "Activity per private commitment", "privacy-preserving adoption cohorts");
-requireText(adoption, "SQL used by this report", "adoption query disclosure");
-requireText(adoption, "https://dune.layrs.xyz", "branded independent Dune evidence");
-requireText(adoptionScript, "api.layrs.xyz/v1/milestone/adoption", "aggregate adoption API");
-requireText(adoptionScript, "uniquePrivateUserCommitments", "private commitment metric");
-requireText(adoptionScript, "directExecution.fundedIdentities", "current funded-identity metric");
-requireText(adoptionScript, "directExecution.walletMappings", "privacy-preserving wallet-mapping count");
-requireText(adoptionScript, "encrypted enclave state remains authoritative", "projection authority boundary");
-rejectText(adoptionScript, /mock|fixture|static fallback/i, "adoption mock or static fallback");
+requireText(adoption, "Fixed campaign snapshot, not a live feed", "explicit snapshot scope");
+
+
+
+requireText(adoption, "Download summary JSON", "aggregate summary download");
+rejectText(adoption, /quicksight\.aws|taskon\/|participants\.csv/, "public exposure of reviewer download links");
+requireText(adoptionScript, "campaign-evidence-data", "packaged evidence data");
+requireText(adoptionScript, "Number.isSafeInteger", "fail-closed count validation");
+rejectText(adoption, /Sep 4|September 4|quest window/, "obsolete historical window commentary");
+rejectText(adoptionScript, /fetch\(|setInterval|innerHTML/, "network polling or unsafe HTML rendering");
 requireText(demo, 'rel="canonical" href="https://layrs.xyz/demo"', "demo canonical URL");
 requireText(demo, '<track default kind="captions"', "default demo captions");
 requireText(demo, "RISC Zero proof", "demo ZK coverage");
@@ -101,7 +102,7 @@ rejectText(deployment, /\sstyle=/i, "deployment inline style attribute");
 rejectText(deployment, /<script(?![^>]*(?:\bsrc=|\btype=["']application\/json["']))/i, "deployment inline executable script");
 
 const registry = JSON.parse(registrySource);
-if (registry.schemaVersion !== 2 || registry.provenance?.repository !== "Layrs active production protocol registry") {
+if (registry.schemaVersion !== 2 || registry.provenance?.repository !== "layrsdotxyz/app-smart-contracts") {
   failures.push("Deployment registry lacks active-production provenance");
 }
 if (registry.chains?.map((chain) => chain.key).join(",") !== "horizen,base") {
@@ -109,7 +110,7 @@ if (registry.chains?.map((chain) => chain.key).join(",") !== "horizen,base") {
 }
 for (const chain of registry.chains ?? []) {
   const expectedExplorer = chain.key === "horizen"
-    ? "https://horizen.calderaexplorer.xyz/address/"
+    ? "https://explorer.horizen.io/address/"
     : "https://basescan.org/address/";
   if (chain.explorer !== expectedExplorer) failures.push(`Invalid ${chain.key} explorer`);
 }

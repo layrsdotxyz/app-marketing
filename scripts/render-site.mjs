@@ -44,13 +44,16 @@ if (registry.schemaVersion !== 2 || !Array.isArray(registry.chains)
   throw new Error("invalid generated deployment registry");
 }
 const safeRegistry = JSON.stringify(registry).replaceAll("<", "\\u003c");
+const campaign = JSON.parse(await read("data/adoption-campaign.json"));
+const safeCampaign = JSON.stringify(campaign).replaceAll("<", "\\u003c");
 const deployment = deploymentTemplate
   .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
   .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim())
   .replace("{{LAYRS_DEPLOYMENT_REGISTRY}}", safeRegistry);
 const adoption = adoptionTemplate
   .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
-  .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim());
+  .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim())
+  .replace("{{LAYRS_CAMPAIGN_EVIDENCE}}", safeCampaign);
 const demo = demoTemplate
   .replace("{{LAYRS_SHARED_HEADER}}", header.trim())
   .replace("{{LAYRS_SHARED_FOOTER}}", footer.trim());

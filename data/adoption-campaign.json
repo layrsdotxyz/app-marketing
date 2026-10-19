@@ -1,0 +1,17 @@
+{
+  "datasetType": "Fixed campaign snapshot; not a live feed",
+  "startUtc": "2026-10-16T18:31:00.000Z",
+  "cutoffUtc": "2026-10-19T17:49:40.571Z",
+  "participants": 392,
+  "participantDepositWallets": 392,
+  "successfulDeposits": 402,
+  "depositedUsdc": "2112.790369",
+  "executedTrades": 750,
+  "deliveredWithdrawals": 399,
+  "withdrawnUsdc": "2060.89",
+  "privateFillProofReferences": 1500,
+  "uniqueSignedReceipts": 1470,
+  "tradesWithBothPublicationsVerified": 750,
+  "source": "Frozen campaign evidence tables; participants successfully deposited and traded during this window. Detailed linked tables are supplied separately to reviewers.",
+  "sourceMetadataUrl": "https://d16vjsfc8ldel.cloudfront.net/snapshot-metadata.json"
+}

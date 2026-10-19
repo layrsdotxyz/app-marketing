@@ -94,10 +94,10 @@ test("uses one canonical shared header and footer on both public pages", () => {
 });
 
 test("publishes an active-production Horizen-first deployment registry", () => {
-  assert.equal(registry.provenance.repository, "Layrs active production protocol registry");
+  assert.equal(registry.provenance.repository, "layrsdotxyz/app-smart-contracts");
   assert.equal(registry.schemaVersion, 2);
   assert.deepEqual(registry.chains.map(({ key }) => key), ["horizen", "base"]);
-  assert.equal(registry.chains[0].explorer, "https://horizen.calderaexplorer.xyz/address/");
+  assert.equal(registry.chains[0].explorer, "https://explorer.horizen.io/address/");
   assert.equal(registry.chains[1].explorer, "https://basescan.org/address/");
   assert.equal(registry.chains[0].core.matchSettlement.proxy, "0x406716f6ca3578715622250c47efb88728b98beb");
   assert.equal(registry.chains[0].core.adminOracle.proxy, "0x0237dfce14d1d66ca58948a6273e400cb3f00976");
@@ -111,7 +111,7 @@ test("deployment interactions are keyboard and mobile accessible", () => {
   assert.match(deploymentScript, /aria-expanded/);
   assert.match(deploymentScript, /navigator\.clipboard\.writeText/);
   assert.match(deploymentScript, /app\.layrs\.xyz\/privacy/);
-  assert.match(deploymentScript, /github\.com\/layrsHQ\/privacy-evidence/);
+  assert.match(deploymentScript, /github\.com\/layrsdotxyz\/app-smart-contracts/);
   assert.match(deploymentScript, /Runtime status/);
   assert.match(deploymentScript, /Publication status is independent/);
 });
@@ -147,40 +147,39 @@ test("binds production marketing publication and rollback to the live Layrs acco
   }
 });
 
-test("publishes privacy-preserving adoption evidence and a captioned demo", () => {
-  assert.match(adoption, /Protocol activity/);
-  assert.match(adoption, /Activity per private commitment/);
-  assert.match(adoption, /SQL used by this report/);
-  assert.match(adoption, /https:\/\/dune\.layrs\.xyz/);
-  assert.doesNotMatch(adoption, /https:\/\/dune\.com\/queries\//);
-  assert.match(adoption, /not human-verified users/);
-  assert.match(adoption, /3,853 historical batches through 23 August 2026/);
-  assert.match(adoption, /202 historical batches through 22 August 2026/);
-  assert.match(adoption, /12 historical attestations through 31 July 2026/);
-  assert.match(adoption, /https:\/\/docs\.layrs\.xyz\/verify/);
-  assert.match(adoptionScript, /directExecution\.fundedIdentities/);
-  assert.match(adoptionScript, /directExecution\.walletMappings/);
-  assert.match(adoptionScript, /api\.layrs\.xyz\/v1\/milestone\/adoption/);
-  assert.match(registry.proofs[0].status, /3,853 historical receipt batches/);
-  assert.match(registry.proofs[1].status, /202 historical registration batches/);
-  assert.match(registry.proofs[2].status, /12 historical attestSettlement transactions/);
-  assert.match(adoption, /Download JSON/);
-  assert.match(adoption, /no address output/);
-  assert.equal(legacyAdoption.length, 2932);
-  assert.equal(legacyAdoption.at(-1), 0x0a);
-  assert.equal(createHash("sha256").update(legacyAdoption.subarray(0, -1)).digest("hex"), "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7");
-  assert.equal(createHash("sha256").update(legacyAdoptionManifest).digest("hex"), "364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1");
-  assert.match(adoptionScript, /adoption-evidence-3fb3d9ac/);
-  assert.match(adoptionScript, /lifetimeUnique\.exactCombined\.toLocaleString/);
-  assert.match(adoptionScript, /\["Unique private commitments"/);
-  assert.match(adoptionScript, /\["Privacy-feature interactions"/);
-  assert.match(adoptionScript, /\["Deposit", item\.chain/);
-  assert.match(adoptionScript, /\["Withdrawal", item\.chain/);
-  assert.doesNotMatch(adoptionScript, /\["(?:Pre-recovery|Legacy|Current|Consolidated)/);
-  assert.doesNotMatch(adoptionScript, /Consolidated (?:signed|settlement|indexed|evidence)/);
-  assert.doesNotMatch(adoptionScript, /mock|fixture|static fallback/i);
-  assert.match(packageScript, /adoption-evidence-manifest-364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1\.json/);
+test("publishes the verified campaign snapshot and preserves the existing demo", async () => {
+  const campaign = JSON.parse(await readFile(path.join(root, "data/adoption-campaign.json"), "utf8"));
+  assert.equal(campaign.participants, 392);
+  assert.equal(campaign.participantDepositWallets, 392);
+  assert.equal(campaign.successfulDeposits, 402);
+  assert.equal(campaign.executedTrades, 750);
+  assert.equal(campaign.deliveredWithdrawals, 399);
+  assert.equal(campaign.uniqueSignedReceipts, 1470);
+  assert.equal(campaign.tradesWithBothPublicationsVerified, campaign.executedTrades);
+  assert.equal(campaign.startUtc, "2026-10-16T18:31:00.000Z");
+  assert.equal(campaign.cutoffUtc, "2026-10-19T17:49:40.571Z");
+  assert.match(adoption, /Fixed campaign snapshot, not a live feed/);
+
+
+
+
+  assert.match(adoption, /do not independently certify enclave runtime attestation/);
+  assert.match(adoptionScript, /Number\.isSafeInteger/);
+  assert.match(adoption, /Download summary JSON/);
+  assert.match(adoption, /Download summary CSV/);
+  assert.doesNotMatch(adoption, /quicksight\.aws|taskon\/|participants\.csv/);
+  assert.doesNotMatch(adoptionScript, /fetch\(|setInterval|milestone\/adoption|innerHTML/);
+  for (const source of [adoption, adoptionScript, JSON.stringify(registry)]) {
+    assert.doesNotMatch(source, /Sep 4|September 4|quest window|3,853 historical|202 historical|12 historical/);
+    assert.doesNotMatch(source, /no receipt batches are currently published/);
+  }
+  assert.equal(registry.proofs.find(p => p.name === "LayrsTeeReceiptRegistry").enabled, true);
+  assert.equal(registry.chains[0].pools[0].pool.proxy, "0xb412f63299ccff4fe57714ee580895cca74dd284");
+  assert.equal(registry.chains[0].pools[0].vault, null);
+  assert.match(deploymentScript, /if \(pool\.vault\)/);
   assert.match(demo, /kind="captions"/);
   assert.match(demo, /RISC Zero proof/);
   assert.match(demo, /zkVerify verification/);
+  assert.equal(createHash("sha256").update(legacyAdoption.subarray(0, -1)).digest("hex"), "3fb3d9acbc38762f6e065758705ce22f7895fd449ff6b9ea7f046465c96c4fa7");
+  assert.equal(createHash("sha256").update(legacyAdoptionManifest).digest("hex"), "364caa9727989c1d9bb1d53eb0e0c4b7c734ad69f345e1949f3c2afafcf174c1");
 });

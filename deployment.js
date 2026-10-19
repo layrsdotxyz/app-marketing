@@ -15,7 +15,7 @@
     layrsAdmin: {
       name: "LayrsAdmin",
       role: "Governance & role registry",
-      what: "The protocol's on-chain access-control root. It holds operational roles and governs upgrades to the UUPS contracts.",
+      what: "Governance and role management for the contracts it administers. The Horizen USDC pool retains a different administration contract from the market registry and oracle.",
       privacy: "Restricts sensitive settlement and payout operations to governed signers, including instructions authorized by the attested execution path.",
     },
     marketRegistry: {
@@ -27,21 +27,27 @@
     adminOracle: {
       name: "AdminOracle",
       role: "Attested price & resolution feed",
-      what: "Publishes reference prices and final outcomes accepted by the settlement rail under governed resolver permissions.",
+      what: "Publishes final market outcomes under governed resolver permissions. This contract is not the live chart-price feed.",
       privacy: "Publishes the outcome evidence required for public verification while user positions and private portfolio state remain outside the public payload.",
     },
     matchSettlement: {
       name: "MatchSettlement",
-      role: "Private-CLOB settlement audit rail",
-      what: "Records governed batches and fill receipts produced by Layrs settlement processing.",
+      role: "Deployed batch-settlement contract",
+      what: "Supports governed settlement batches. Current campaign private-fill evidence is published through LayrsTeeReceiptRegistry, not counted from this contract.",
       privacy: "The order book and individual private instructions are processed inside the confidential execution boundary; the chain receives the verifiable settlement rail, not the private book.",
     },
   };
 
   const poolInfo = (chain, pool) => {
+    if (chain.key === "horizen" && pool.symbol === "USDC") {
+      return {
+        what: "The Horizen USDC custody pool used for participant deposits and withdrawals. No separate LP vault is claimed for this pool.",
+        privacy: "Pool transfers are public. Individual orders and portfolio accounting remain in the private execution system; private-fill commitments are published separately.",
+      };
+    }
     if (chain.key === "horizen" && pool.symbol === "ZEN") {
       return {
-        what: "The live custody pool and ERC-4626 liquidity vault for ZEN prediction markets on Horizen MainNet, with its registered ZenStaker yield adapter.",
+        what: "The deployed ZEN custody pool and ERC-4626 vault remain referenced by production configuration. The October campaign evidence uses the separate USDC pool.",
         privacy: "Orders against pooled liquidity are handled by the attested private CLOB. Public contracts expose custody and aggregate settlement, not individual orders or portfolio ownership.",
         verify: true,
       };
@@ -215,7 +221,8 @@
         role: copy.role,
         info: copy,
         tags: [
-          { label: "Active runtime", className: "active" },
+          { label: addresses.runtimeLabel ?? "Configured endpoint", className: addresses.runtimeLabel === "Active publication" ? "active" : "" },
+          ...(addresses.codeVerified ? [{ label: "Code checked", className: "verified" }] : []),
           ...(addresses.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
           ...(addresses.rolesVerified ? [{ label: "Roles verified", className: "verified" }] : []),
         ],
@@ -235,23 +242,23 @@
       if (pool.pool) addresses.push(
         { label: "Pool", address: pool.pool.proxy, primary: true },
       );
-      addresses.push({ label: "Vault", address: pool.vault.proxy, primary: true });
+      if (pool.vault) addresses.push({ label: "Vault", address: pool.vault.proxy, primary: true });
       for (const adapter of pool.adapters) {
         addresses.push({ label: "Adapter", address: adapter.address, primary: false });
       }
       if (pool.pool?.implementation) addresses.push(
         { label: "Pool impl", address: pool.pool.implementation, primary: false },
       );
-      if (pool.vault.implementation) {
+      if (pool.vault?.implementation) {
         addresses.push({ label: "Vault impl", address: pool.vault.implementation, primary: false });
       }
       container.appendChild(card(chain, {
-        name: pool.pool ? `${pool.symbol} LayrsPool + Vault` : `${pool.symbol} LP Vault`,
+        name: pool.pool ? `${pool.symbol} LayrsPool${pool.vault ? " + Vault" : ""}` : `${pool.symbol} LP Vault`,
         role: pool.role,
         info: poolInfo(chain, pool),
         tags: [
           ...(pool.active ? [{ label: "Active", className: "active" }] : []),
-          { label: "Verified", className: "verified" },
+          ...(pool.codeVerified ? [{ label: "Code checked", className: "verified" }] : []),
         ],
         addresses,
         asset: { symbol: pool.symbol, address: pool.asset },
@@ -300,15 +307,15 @@
     const proofHead = element("div", "registry-chain-head");
     proofHead.append(
       element("h2", "", "Privacy proofs"),
-      element("span", "registry-chain-id", "RISC Zero · zkVerify · Horizen"),
+      element("span", "registry-chain-id", "Horizen"),
     );
-    const repository = element("a", "registry-explorer", "public evidence ↗");
-    repository.href = "https://github.com/layrsHQ/privacy-evidence";
+    const repository = element("a", "registry-explorer", "contracts and deployment records ↗");
+    repository.href = "https://github.com/layrsdotxyz/app-smart-contracts";
     repository.target = "_blank";
     repository.rel = "noopener noreferrer";
     proofHead.appendChild(repository);
     proofSection.appendChild(proofHead);
-    proofSection.appendChild(element("p", "registry-group-label", "Current production proof registries"));
+    proofSection.appendChild(element("p", "registry-group-label", "Proof registry deployments"));
 
     const proofGrid = element("div", "registry-grid");
     for (const proof of registry.proofs) {
@@ -322,7 +329,7 @@
           privacy: "Registry publication is separate from confidential execution and does not reveal the private order book.",
         },
         tags: [
-          { label: proof.enabled ? "Enabled" : "Disabled", className: proof.enabled ? "active" : "" },
+          { label: proof.runtimeLabel ?? (proof.enabled ? "Publishing" : "Historical deployment"), className: proof.enabled ? "active" : "" },
           ...(proof.sourceVerified ? [{ label: "Source verified", className: "verified" }] : []),
         ],
         addresses: [
@@ -361,7 +368,7 @@
   const provenance = document.getElementById("registry-provenance");
   if (provenance) {
     provenance.textContent = registry.provenance.snapshotAt
-      ? `Active production registry snapshot: ${registry.provenance.snapshotAt}. ${registry.provenance.note ?? ""}`
+      ? `Deployment records checked: ${registry.provenance.snapshotAt}. ${registry.provenance.note ?? ""}`
       : `Generated from app-smart-contracts ${registry.provenance.sourceCommit.slice(0, 12)}.`;
   }
 

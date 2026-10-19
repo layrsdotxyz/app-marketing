@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Layrs — Adoption Evidence</title>
-<meta name="description" content="Privacy-preserving aggregate adoption evidence for Layrs Protocol.">
+<meta name="description" content="Layrs campaign participants, deposits, private trades and withdrawals with downloadable on-chain evidence.">
 <meta name="base:app_id" content="6a600856078f6baf9ef300da">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://layrs.xyz/adoption">
@@ -36,116 +36,30 @@
 </header>
 <!-- LAYRS_SHARED_HEADER_END -->
 <main class="evidence-main">
-  <section class="evidence-wrap adoption-report" aria-labelledby="adoption-title">
-    <div class="adoption-toolbar">
-      <div>
-        <p class="eyebrow">Public protocol evidence</p>
-        <h1 id="adoption-title">Adoption report</h1>
-      </div>
-      <div class="evidence-actions" aria-label="Download report">
-        <button id="download-adoption-json" class="btn" type="button" disabled>Download JSON</button>
-        <button id="download-adoption-csv" class="evidence-download" type="button" disabled>Download CSV ↓</button>
-      </div>
-    </div>
-    <div class="adoption-provenance">
-      <p><b>Primary source</b><span>Signed direct-runtime projection plus retained legacy reporting evidence</span></p>
-      <p><b>Chain evidence</b><span>Confirmed Horizen settlement artifacts and indexed Base/Horizen contract events</span></p>
-      <p><b>Refresh policy</b><span>Internal snapshot refreshes every 3 hours; public Dune history is backfilled from 1 July 2026 and refreshed manually</span></p>
-    </div>
-
-    <div class="evidence-section-head adoption-section-head">
-      <div><p class="eyebrow">Current snapshot</p><h2>Protocol activity</h2></div>
-      <p id="adoption-generated-at" class="evidence-timestamp">Loading report…</p>
-    </div>
-    <div id="adoption-status" class="evidence-notice" role="status">Retrieving the current aggregate report from the Layrs evidence API.</div>
-    <p class="adoption-query-note"><b>Counting boundary:</b> private commitments and privacy-feature interactions are protocol activity, not human-verified users, wallet addresses, user-signed Horizen transactions, or TaskOn-qualified participants. Operator-published settlement transactions are reported separately from user activity.</p>
-
-    <div class="adoption-table-wrap">
-      <table class="adoption-table">
-        <thead><tr><th>Metric</th><th>Value</th><th>Source</th><th>Definition</th></tr></thead>
-        <tbody id="adoption-summary"></tbody>
-      </table>
-    </div>
-
-    <div class="evidence-section-head adoption-section-head">
-      <div><p class="eyebrow">Activity ledger</p><h2>Recorded interactions</h2></div>
-    </div>
-    <div class="adoption-table-wrap">
-      <table class="adoption-table">
-        <thead><tr><th>Activity</th><th>Network</th><th>Asset / state</th><th>Count</th><th>Recorded value</th><th>Evidence source</th></tr></thead>
-        <tbody id="adoption-activity"></tbody>
-      </table>
-    </div>
-
-    <div class="evidence-section-head adoption-section-head">
-      <div><p class="eyebrow">Privacy-preserving cohort</p><h2>Activity per private commitment</h2></div>
-    </div>
-    <div class="adoption-table-wrap adoption-table-wrap--compact">
-      <table class="adoption-table">
-        <thead><tr><th>Recorded interactions</th><th>Private commitments</th><th>Disclosure</th></tr></thead>
-        <tbody id="adoption-buckets"></tbody>
-      </table>
-    </div>
-
-    <div class="evidence-section-head adoption-section-head">
-      <div><p class="eyebrow">Reproducibility</p><h2>SQL used by this report</h2></div>
-      <p class="evidence-timestamp">Read-only aggregate queries · no address output</p>
-    </div>
-    <p class="adoption-query-note">These are the production report queries. Current-epoch financial values are projections of signed direct-runtime receipts; the encrypted enclave state remains authoritative. Chain-backed rows are populated only from confirmed settlement evidence. No wallet address or identity mapping is returned to the browser.</p>
-    <div id="adoption-queries" class="adoption-queries"></div>
-
-    <div class="adoption-checksum">
-      <span>Report checksum</span>
-      <code id="adoption-checksum">Pending</code>
-    </div>
-
-    <div class="evidence-section-head adoption-section-head">
-      <div><p class="eyebrow">Independent verification</p><h2>On-chain proof sources</h2></div>
-    </div>
-    <div class="adoption-table-wrap">
-      <table class="adoption-table">
-        <thead><tr><th>Evidence</th><th>Network</th><th>Coverage</th><th>Independent source</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Contract interactions and token flow</td>
-            <td>Base</td>
-            <td>Successful calls, unique callers, USDC/ZEN/WETH pool and vault flow</td>
-            <td><a class="adoption-source-link" href="https://dune.layrs.xyz" target="_blank" rel="noreferrer">Open Dune analytics ↗</a></td>
-          </tr>
-          <tr>
-            <td>Private fill settlement batches</td>
-            <td>Horizen</td>
-            <td>Confirmed public audit batches emitted after private matching</td>
-            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x406716f6ca3578715622250c47efb88728b98beb" target="_blank" rel="noreferrer">MatchSettlement ↗</a></td>
-          </tr>
-          <tr>
-            <td>Market outcomes</td>
-            <td>Horizen</td>
-            <td>Published resolution transactions and outcome evidence</td>
-            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x0237dfcE14d1D66CA58948a6273E400cB3f00976" target="_blank" rel="noreferrer">AdminOracle ↗</a></td>
-          </tr>
-          <tr>
-            <td>TEE receipt batches</td>
-            <td>Horizen</td>
-            <td>3,853 historical batches through 23 August 2026; zero in the Sep 4–7 quest window; production publication is currently disabled</td>
-            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x3F1D32cD64Ab362a7b4390E63229B2a7b8Ec6A96" target="_blank" rel="noreferrer">TEE registry ↗</a> · <a class="adoption-source-link" href="https://docs.layrs.xyz/verify" target="_blank" rel="noreferrer">Receipt verifier ↗</a></td>
-          </tr>
-          <tr>
-            <td>Private registration batches</td>
-            <td>Horizen</td>
-            <td>202 historical batches through 22 August 2026; zero in the Sep 4–7 quest window; every publication was submitted by the protocol publisher</td>
-            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0xa43c9694a417Ca3109813846dea4E984eE9C25A1" target="_blank" rel="noreferrer">Registration registry ↗</a></td>
-          </tr>
-          <tr>
-            <td>ZK settlement attestations</td>
-            <td>Horizen</td>
-            <td>12 historical attestations through 31 July 2026; zero in the Sep 4–7 quest window; production schedule is currently disabled</td>
-            <td><a class="adoption-source-link" href="https://horizen.calderaexplorer.xyz/address/0x6E208C57786F9fF21ab2a582cBFF69D184D9E9c1" target="_blank" rel="noreferrer">ZK registry ↗</a></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+<section class="evidence-wrap adoption-report" aria-labelledby="adoption-title">
+  <div class="adoption-toolbar">
+    <div><p class="eyebrow">Campaign evidence · Horizen</p><h1 id="adoption-title">Adoption report</h1></div>
+    <div class="evidence-actions"><button id="download-adoption-json" class="btn" type="button" disabled>Download summary JSON</button><button id="download-adoption-csv" class="evidence-download" type="button" disabled>Download summary CSV ↓</button></div>
+  </div>
+  <div class="adoption-provenance">
+    <p><b>Campaign start</b><span>16 October 2026, 18:31 UTC · 17 October, 00:01 IST</span></p>
+    <p><b>Participants</b><span>Accounts that successfully deposited and traded during the campaign window</span></p>
+    <p><b>Evidence period</b><span>Fixed campaign snapshot, not a live feed. Full period and metric definitions are included in the summary downloads.</span></p>
+  </div>
+  <div class="evidence-section-head adoption-section-head"><div><p class="eyebrow">Verified campaign snapshot</p><h2>Protocol activity</h2></div></div>
+  <p id="adoption-status" class="evidence-notice" role="status">Loading the campaign snapshot packaged with this page.</p>
+  <div class="adoption-table-wrap"><table class="adoption-table"><thead><tr><th>Metric</th><th>Value</th><th>Definition</th></tr></thead><tbody id="adoption-summary"></tbody></table></div>
+  <noscript><p>This page uses JavaScript to display the packaged campaign summary. Contract explorer links remain available without JavaScript.</p></noscript>
+  <div class="evidence-section-head adoption-section-head"><div><p class="eyebrow">On-chain linkability</p><h2>Verify on Horizen</h2></div></div>
+  <div class="adoption-table-wrap"><table class="adoption-table"><thead><tr><th>Contract</th><th>Evidence</th><th>Explorer</th></tr></thead><tbody>
+    <tr><td>USDC LayrsPool</td><td>Participant deposit-wallet transfers into protocol custody</td><td><a href="https://explorer.horizen.io/address/0xb412f63299ccff4fe57714ee580895cca74dd284" target="_blank" rel="noopener noreferrer">0xb412f6…4dd284 ↗</a></td></tr>
+    <tr><td>TEE receipt registry</td><td>Published private-fill receipt commitments and Merkle roots</td><td><a href="https://explorer.horizen.io/address/0x3f1d32cd64ab362a7b4390e63229b2a7b8ec6a96" target="_blank" rel="noopener noreferrer">0x3f1d32…ec6a96 ↗</a></td></tr>
+    <tr><td>MarketRegistry</td><td>Registered market definitions</td><td><a href="https://explorer.horizen.io/address/0x9c67176dfc30ad540f3ecbad8083e4d9ac1885b1" target="_blank" rel="noopener noreferrer">0x9c6717…1885b1 ↗</a></td></tr>
+    <tr><td>AdminOracle</td><td>Published market outcomes</td><td><a href="https://explorer.horizen.io/address/0x0237dfce14d1d66ca58948a6273e400cb3f00976" target="_blank" rel="noopener noreferrer">0x0237df…f00976 ↗</a></td></tr>
+  </tbody></table></div>
+  <p class="adoption-query-note">Each execution is counted once. Receipt signatures, Merkle inclusion and on-chain publication were checked for both trade sides. These checks do not independently certify enclave runtime attestation. Detailed linked tables and a reproducible verification bundle are supplied separately to reviewers.</p>
+  <p><a href="https://github.com/layrsdotxyz/app-smart-contracts" target="_blank" rel="noopener noreferrer">Smart-contracts source and deployment records ↗</a> · <a href="/deployment">Deployment overview ↗</a></p>
+</section>
 </main>
 <!-- LAYRS_SHARED_FOOTER_START -->
 <footer>
@@ -178,5 +92,6 @@
   </div>
 </footer>
 <!-- LAYRS_SHARED_FOOTER_END -->
+<script id="campaign-evidence-data" type="application/json">{"datasetType":"Fixed campaign snapshot; not a live feed","startUtc":"2026-10-16T18:31:00.000Z","cutoffUtc":"2026-10-19T17:49:40.571Z","participants":392,"participantDepositWallets":392,"successfulDeposits":402,"depositedUsdc":"2112.790369","executedTrades":750,"deliveredWithdrawals":399,"withdrawnUsdc":"2060.89","privateFillProofReferences":1500,"uniqueSignedReceipts":1470,"tradesWithBothPublicationsVerified":750,"source":"Frozen campaign evidence tables; participants successfully deposited and traded during this window. Detailed linked tables are supplied separately to reviewers.","sourceMetadataUrl":"https://d16vjsfc8ldel.cloudfront.net/snapshot-metadata.json"}</script>
 </body>
 </html>
